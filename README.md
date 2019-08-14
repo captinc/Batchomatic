@@ -4,9 +4,12 @@ TL;DR - a tweak to batch install all of your other tweaks, repos, saved .debs, t
 Compatible with all devices on iOS 11.0-12.2. Works with Cydia, Zebra, Sileo, and Installer on unc0ver, unc0ver dark, and Chimera. Might work on older iOS versions too
 
 Repo: BigBoss
+
 Price: Free!
 
 [Additional information available in the reddit post](https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/)
+
+[Screenshots](https://imgur.com/a/ZR7eSaR)
 
 # How to compile
 1. Install Theos on your Mac
