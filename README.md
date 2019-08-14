@@ -7,7 +7,7 @@ Repo: BigBoss
 
 Price: Free!
 
-[.deb download](https://github.com/captinc/Batchomatic/raw/master/com.captinc.batchomatic.deb)
+[Direct .deb download](https://github.com/captinc/Batchomatic/raw/master/com.captinc.batchomatic.deb)
 
 [Additional information available in the reddit post](https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/)
 
@@ -17,6 +17,7 @@ Price: Free!
 1. Install Theos on your Mac
 2. `cd /path/to/Batchomatic-master`
 3. `./compile.sh`
+
 A new .deb will now be in the "Batchomatic-master" folder
 
 # License
