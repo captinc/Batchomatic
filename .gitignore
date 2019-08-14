@@ -1,2 +1,4 @@
 
 *.DS_Store
+sourcecode-daemon/.theos
+sourcecode-tweak/.theos

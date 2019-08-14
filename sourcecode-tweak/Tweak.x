@@ -9,7 +9,7 @@
 
 //--------------------------------------------------------------------------------------------------------------------------
 //global variables
-NSString *batchomaticVersion = @"v3.0-rc2-1";
+NSString *batchomaticVersion = @"v3.0";
 int packageManager;
 
 bool prefsSwitchStatus;
