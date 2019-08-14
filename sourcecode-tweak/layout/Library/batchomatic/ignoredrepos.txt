@@ -1,0 +1,4 @@
+https://apt.bingner.com/
+https://diatr.us/apt/
+https://diatr.us/sileodark/
+https://repo.chimera.sh/

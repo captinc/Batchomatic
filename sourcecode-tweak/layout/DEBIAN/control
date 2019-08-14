@@ -1,0 +1,9 @@
+Package: com.captinc.batchomatic
+Name: Batchomatic
+Version: 3.0
+Author: Capt Inc <captinc37@gmail.com>
+Maintainer: Capt Inc <captinc37@gmail.com>
+Depends: mobilesubstrate, gawk, coreutils
+Architecture: iphoneos-arm
+Section: Tweaks
+Description: Batch-install your tweaks, repos, saved .debs, tweak preferences, and hosts file!

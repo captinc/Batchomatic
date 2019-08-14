@@ -1,0 +1,8 @@
+Package: com.captinc.batchomaticd
+Name: batchomaticd
+Version: 1.0
+Author: Capt Inc <captinc37@gmail.com>
+Maintainer: Capt Inc <captinc37@gmail.com>
+Architecture: iphoneos-arm
+Section: Tweaks
+Description: Helper tool for Batchomatic

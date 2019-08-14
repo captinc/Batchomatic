@@ -1,0 +1,6 @@
+#!/bin/bash
+
+mkdir /var/mobile/BatchomaticDebs > /dev/null 2>&1
+mkdir /var/mobile/BatchomaticDebs/UserSavedDebs > /dev/null 2>&1
+chmod -R 777 /var/mobile/BatchomaticDebs
+exit 0
