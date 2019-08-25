@@ -5,6 +5,7 @@
 
 @interface Cydia : UIApplication
 - (void) reloadData;
+- (void) _loaded;
 - (void) resolve;
 - (void) queue;
 - (void) addSource:(NSDictionary *)dictionary;
@@ -71,7 +72,7 @@ typedef enum {
 
 //-----------------------------------------------------------------
 //headers for compatibility with Sileo
-@interface PackageListViewController : UIViewController
+@interface _TtC5Sileo25PackageListViewController : UIViewController
 - (void) viewDidLoad;
 @end
 

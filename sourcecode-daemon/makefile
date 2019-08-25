@@ -9,6 +9,3 @@ batchomaticd_CFLAGS = -fobjc-arc
 batchomaticd_CODESIGN_FLAGS = -Splatform.xml
 
 include $(THEOS_MAKE_PATH)/tool.mk
-
-internal-stage::
-	$(ECHO_NOTHING)chmod +s $(THEOS_STAGING_DIR)/usr/bin/batchomaticd$(ECHO_END)

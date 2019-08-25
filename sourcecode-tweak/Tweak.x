@@ -9,7 +9,6 @@
 
 //--------------------------------------------------------------------------------------------------------------------------
 //global variables
-NSString *batchomaticVersion = @"v3.0";
 int packageManager;
 
 bool prefsSwitchStatus;
@@ -20,6 +19,7 @@ bool tweaksSwitchStatus;
 bool offlineDebsSwitchStatus;
 bool uicacheSwitchStatus;
 bool respringSwitchStatus;
+bool removeEverythingSwitch;
 
 UIAlertController *progressAlert;
 UIActivityIndicatorView *spinner;
@@ -137,14 +137,20 @@ UIStackView *createASwitchWithLabel(id self, NSString *message, BOOL onOrOff, SE
     return stackview;
 }
 
-UIStackView *create5Switches(id self) { //combines 5 UIStackViews from above to create a UIAlertController with 5 toggles inside of it
+UIStackView *create5Switches(id self) { //combines 6 UIStackViews from above to create a UIAlertController with 5 toggles and 1 label inside of it
     UILabel *modeLabel = [[UILabel alloc] init];
-    if (debIsOnlineMode() == true) {
-        modeLabel.text = @"Your .deb is in online mode";
+    if (isDebInstalled() == true) {
+        if (debIsOnlineMode() == true) {
+            modeLabel.text = @"Your .deb is in online mode";
+        }
+        else {
+            modeLabel.text = @"Your .deb is in offline mode";
+        }
     }
     else {
-        modeLabel.text = @"Your .deb is in offline mode";
+        modeLabel.text = @"Your .deb is not installed";
     }
+    
     [modeLabel sizeToFit];
     UIStackView *modeStackView = [[UIStackView alloc] init];
     modeStackView.axis = UILayoutConstraintAxisHorizontal;
@@ -178,7 +184,7 @@ UIStackView *create5Switches(id self) { //combines 5 UIStackViews from above to 
     return combinedStackView;
 }
 
-UIStackView *create2Switches(id self) { //combines 5 UIStackViews from above to create a UIAlertController with 5 toggles inside of it
+UIStackView *create2Switches(id self) { //combines 2 UIStackViews from above to create a UIAlertController with 2 toggles inside of it
     UILabel *emptySpaceLabel = [[UILabel alloc] init];
     emptySpaceLabel.text = @"";
     [emptySpaceLabel sizeToFit];
@@ -200,7 +206,24 @@ UIStackView *create2Switches(id self) { //combines 5 UIStackViews from above to 
     return combinedStackView;
 }
 
-void showProcessingDialog(id self, NSString *wordMessage, bool includeStage, int startingStep, bool shouldAutoPresentDialog) { //displays a UIAlertController with stages (for example: Stage 1/4), what we are doing, and a UIActivityIndicator
+UIStackView *create1Switch(id self) { //finalizes the 1 UIStackView from above to create a UIAlertController with 1 toggle inside of it
+    UILabel *emptySpaceLabel = [[UILabel alloc] init];
+    emptySpaceLabel.text = @"";
+    [emptySpaceLabel sizeToFit];
+    UIStackView *emptySpaceStackView = [[UIStackView alloc] init];
+    [emptySpaceStackView addArrangedSubview:emptySpaceLabel];
+    
+    UIStackView *combinedStackView = [[UIStackView alloc] init];
+    combinedStackView.axis = UILayoutConstraintAxisVertical;
+    combinedStackView.spacing = 10;
+    [combinedStackView addArrangedSubview:emptySpaceStackView];
+    [combinedStackView addArrangedSubview:createASwitchWithLabel(self, @"Remove everything?", NO, @selector(removeEverythingSwitchTapped:))];
+    removeEverythingSwitch = false;
+    
+    return combinedStackView;
+}
+
+NSString *showProcessingDialog(id self, NSString *wordMessage, bool includeStage, int startingStep, bool shouldAutoPresentDialog) { //displays a UIAlertController with stages (for example: Stage 1/4), what we are doing, and a UIActivityIndicator
     NSString *totalMessage;
     if (includeStage == true) {
         currentStep = startingStep;
@@ -241,6 +264,7 @@ void showProcessingDialog(id self, NSString *wordMessage, bool includeStage, int
     if (shouldAutoPresentDialog == true) {
         [self presentViewController:progressAlert animated:true completion:nil];
     }
+    return totalMessage;
 }
 
 void transitionProgressMessage(NSString *theMessage) { //only transitions the text of my processing dialog
@@ -262,8 +286,48 @@ NSString *updateProgressMessage(NSString *wordMessage) { //increments what stage
     return totalMessage;
 }
 
-void endProcessingDialog(NSString *theMessage, id self, bool promptToRespring, bool transition) { //gets rid of the UIActivityIndicator, transitions the text, and asks the user if they want to uicache and respring or not
-    if (promptToRespring == true) {
+void endProcessingDialog(NSString *theMessage, UIViewController *self, int kindOfPrompt, bool transition) { //gets rid of the UIActivityIndicator, transitions the text, and asks the user if they want to uicache and respring or not
+    if (kindOfPrompt == 1) {
+        transitionProgressMessage(theMessage);
+        [spinner stopAnimating];
+        
+        UIAlertAction *exportAction = [UIAlertAction actionWithTitle:@"Export" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            FILE *nameOfDebFile = fopen("/tmp/batchomatic/nameOfDeb.txt", "r");
+            NSString *withfileName = readEachLineOfFile(nameOfDebFile);
+            fclose(nameOfDebFile);
+            runCommand(@"rm -r /tmp/batchomatic");
+            NSString *filePath = [NSString stringWithFormat:@"/var/mobile/BatchomaticDebs/%@", withfileName];
+            
+            NSMutableArray *items = [NSMutableArray array];
+            
+            if (filePath) {
+                [items addObject:[NSURL fileURLWithPath:filePath]];
+            }
+            
+            UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+            [activityViewController setValue:withfileName forKey:@"subject"];
+            
+            if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+                activityViewController.modalPresentationStyle = UIModalPresentationPopover;
+                UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
+                popPC.sourceView = self.view;
+                CGRect sourceRext = CGRectZero;
+                sourceRext.origin = CGPointMake(75, 0);
+                popPC.sourceRect = sourceRext;
+                popPC.permittedArrowDirections = UIPopoverArrowDirectionUp;
+            }
+            
+            [activityViewController setCompletionWithItemsHandler:
+             ^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+                 
+             }];
+            [self presentViewController:activityViewController animated:YES completion:nil];
+        }];
+        UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Dismiss" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) { runCommand(@"rm -r /tmp/batchomatic"); }];
+        [progressAlert addAction:exportAction];
+        [progressAlert addAction:dismissAction];
+    }
+    else if (kindOfPrompt == 2) {
         NSString *uicacheCommand;
         NSString *respringCommand;
         NSString *uicacheAndRespringCommand;
@@ -285,7 +349,7 @@ void endProcessingDialog(NSString *theMessage, id self, bool promptToRespring, b
             if (uicacheSwitchStatus == true && respringSwitchStatus == false) {
                 showProcessingDialog(self, @"Running uicache....", false, 1, true);
                 runCommand(uicacheCommand);
-                endProcessingDialog(@"Done!", self, false, false);
+                endProcessingDialog(@"Done!", self, 3, false);
             }
             else if (uicacheSwitchStatus == false && respringSwitchStatus == true) {
                 runCommand(respringCommand);
@@ -415,12 +479,21 @@ void sileoFixDependencies(NSMutableString *unfindableTweaks) {
 //methods to actually install any available .debs, add your repos, and queue your tweaks
 void installSavedDebs(NSString *motherMessage, NSString *pathToDebsFolder, id self) { //installs all .debs at the given path and updates the UIAlertController about what .deb is being installed right now
     NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:pathToDebsFolder];
-    
     for (NSString *debFileName in directoryEnumerator) {
         if ([[debFileName pathExtension] isEqualToString:@"deb"]) {
             NSString *thePackageIdentifer = runCommand([NSString stringWithFormat:@"prefix=\" Package: \" && dpkg --info %@%@%@%@", pathToDebsFolder, @"/", debFileName, @" | grep \"Package: \" | sed -e \"s/^$prefix//\""]);
-            transitionProgressMessage([NSString stringWithFormat:@"%@%@%@", motherMessage, @"\n", thePackageIdentifer]);
             
+            if ([thePackageIdentifer isEqualToString:@"com.captinc.batchomatic"]) {
+                continue;
+            }
+            if (packageManager == 2 && [thePackageIdentifer isEqualToString:@"xyz.willy.zebra"]) {
+                continue;
+            }
+            if (packageManager == 4 && [thePackageIdentifer isEqualToString:@"me.apptapp.installer"]) {
+                continue;
+            }
+            
+            transitionProgressMessage([NSString stringWithFormat:@"%@%@%@", motherMessage, @"\n", thePackageIdentifer]);
             runCommand([NSString stringWithFormat:@"batchomaticd 6 %@%@%@", pathToDebsFolder, @"/", debFileName]);
         }
     }
@@ -592,7 +665,7 @@ void addRepos(id self) { //adds all of the user's repos to the currently-in-use 
                 queueTweaks(self);
             }
             else {
-                endProcessingDialog(@"Done! Succesfully installed your .deb!", self, true, true);
+                endProcessingDialog(@"Done! Succesfully installed your .deb!", self, 2, true);
             }
         }
         runCommand(@"rm -r /tmp/batchomatic");
@@ -619,7 +692,7 @@ void addRepos(id self) { //adds all of the user's repos to the currently-in-use 
                 queueTweaks(self);
             }
             else {
-                endProcessingDialog(@"Done! Succesfully installed your .deb!", self, true, true);
+                endProcessingDialog(@"Done! Succesfully installed your .deb!", self, 2, true);
             }
         }
     }
@@ -646,7 +719,7 @@ void addRepos(id self) { //adds all of the user's repos to the currently-in-use 
                 queueTweaks(self);
             }
             else {
-                endProcessingDialog(@"Done! Succesfully installed your .deb!", self, true, true);
+                endProcessingDialog(@"Done! Succesfully installed your .deb!", self, 2, true);
             }
         }
         runCommand(@"rm -r /tmp/batchomatic");
@@ -671,7 +744,7 @@ void addRepos(id self) { //adds all of the user's repos to the currently-in-use 
                 queueTweaks(self);
             }
             else {
-                endProcessingDialog(@"Done! Succesfully installed your .deb!", self, true, true);
+                endProcessingDialog(@"Done! Succesfully installed your .deb!", self, 2, true);
             }
         }
         runCommand(@"rm -r /tmp/batchomatic");
@@ -682,11 +755,29 @@ void addRepos(id self) { //adds all of the user's repos to the currently-in-use 
 //methods to perform the main features of this tweak
 void createDeb(id self) { //creates a .deb with the user's tweaks, repos, tweak preferences, saved .debs, and hosts file
     maxSteps = 1;
+    NSString *motherMessage = showProcessingDialog(self, @"Creating your .deb....\n", true, 1, true);
     
-    showProcessingDialog(self, @"Creating your custom .deb....", true, 1, true);
-    runCommand(@"/Library/batchomatic/create.sh");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Running initial setup"]);
+    runCommand(@"/Library/batchomatic/create.sh 1");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Setting up filesystem"]);
+    runCommand(@"/Library/batchomatic/create.sh 2");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Creating control file"]);
+    runCommand(@"/Library/batchomatic/create.sh 3");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering tweaks"]);
+    runCommand(@"/Library/batchomatic/create.sh 4");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering repos"]);
+    runCommand(@"/Library/batchomatic/create.sh 5");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering tweak preferences"]);
+    runCommand(@"/Library/batchomatic/create.sh 6");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering hosts file"]);
+    runCommand(@"/Library/batchomatic/create.sh 7");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering saved debs"]);
+    runCommand(@"/Library/batchomatic/create.sh 8");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Building final deb"]);
+    runCommand(@"/Library/batchomatic/create.sh 9");
     
-    endProcessingDialog(@"Done!\nSuccesfully created your .deb!\nIt's at /var/mobile/BatchomaticDebs", self, false, false);
+    runCommand(@"/Library/batchomatic/create.sh 10");
+    endProcessingDialog(@"Done!\nSuccesfully created your .deb!\nIt's at /var/mobile/BatchomaticDebs", self, 1, false);
 }
 
 void installDeb(id self) { //determines what the user wants to be installed and does it
@@ -716,16 +807,16 @@ void installDeb(id self) { //determines what the user wants to be installed and 
     
     showProcessingDialog(self, @"Verifying your .deb....", true, 1, true);
     if (isDebInstalled() == false) {
-        endProcessingDialog(@"Error:\nYour .deb is not currently installed. Go install it with Filza and try again", self, false, false);
+        endProcessingDialog(@"Error:\nYour .deb is not currently installed. Go install it with Filza and try again", self, 3, false);
         return;
     }
     if (isDebModern() == false) {
-        endProcessingDialog(@"Error:\nYou need to convert your .deb to be made with v3.0 or newer. Go back and tap 'Convert old .deb'", self, false, false);
+        endProcessingDialog(@"Error:\nYou need to convert your .deb to be made with v3.0 or newer. Go back and tap 'Convert old .deb'", self, 3, false);
         return;
     }
     
     if (allSwitchesAreOff() == true) {
-        endProcessingDialog(@"Done! No toggles were on, so no action was taken", self, true, true);
+        endProcessingDialog(@"Done! No toggles were on, so no action was taken", self, 2, true);
         return;
     }
     
@@ -734,6 +825,7 @@ void installDeb(id self) { //determines what the user wants to be installed and 
         runCommand(@"find /var/mobile/BatchInstall -type f -exec chmod 777 {} \\;");
         runCommand(@"find /var/mobile/BatchInstall -type d -exec chmod 777 {} \\;");
         runCommand(@"cp -r /var/mobile/BatchInstall/Preferences/* /var/mobile/Library/Preferences");
+        runCommand(@"cp /var/mobile/BatchInstall/Preferences/libactivator.exported.plist /var/mobile/Library/Caches/libactivator.plist");
     }
     
     if (savedDebsSwitchStatus == true) {
@@ -765,61 +857,95 @@ void installDeb(id self) { //determines what the user wants to be installed and 
         return;
     }
     
-    endProcessingDialog(@"Done! Succesfully installed your .deb!", self, true, true);
+    endProcessingDialog(@"Done! Succesfully installed your .deb!", self, 2, true);
 }
 
 void convertDeb(id self) { //converts a .deb that was made with prior Batchomatic versions into a .deb that can be used with v3.0
     maxSteps = 2;
-    
     showProcessingDialog(self, @"Verifying your .deb....", true, 1, true);
     if (isDebInstalled() == false) {
-        endProcessingDialog(@"Error:\nYour .deb is not currently installed. Go install it with Filza and try again", self, false, false);
+        endProcessingDialog(@"Error:\nYour .deb is not currently installed. Go install it with Filza and try again", self, 3, false);
         return;
     }
     if (isDebModern() == true) {
-        endProcessingDialog(@"Error:\nYour currently installed .deb was already made with v3.0 or newer", self, false, false);
+        endProcessingDialog(@"Error:\nYour currently installed .deb was already made with v3.0 or newer", self, 3, false);
         return;
     }
     
-    updateProgressMessage(@"Converting your .deb....");
-    runCommand(@"/Library/batchomatic/convert.sh");
+    NSString *motherMessage = updateProgressMessage(@"Converting your .deb....\n");
     
-    endProcessingDialog(@"Done!\nSuccesfully converted your old .deb into a new one!\nIt's now at /var/mobile/BatchomaticDebs\n\nBefore you can install this new .deb, you need to remove the current BatchInstall tweak and then install the converted .deb", self, false, false);
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Running initial setup"]);
+    runCommand(@"/Library/batchomatic/convert.sh 1");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Setting up filesystem"]);
+    runCommand(@"/Library/batchomatic/convert.sh 2");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Creating control file"]);
+    runCommand(@"/Library/batchomatic/convert.sh 3");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering tweaks"]);
+    runCommand(@"/Library/batchomatic/convert.sh 4");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering repos"]);
+    runCommand(@"/Library/batchomatic/convert.sh 5");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering tweak preferences"]);
+    runCommand(@"/Library/batchomatic/convert.sh 6");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering hosts file"]);
+    runCommand(@"/Library/batchomatic/convert.sh 7");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering saved debs"]);
+    runCommand(@"/Library/batchomatic/convert.sh 8");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Building final deb"]);
+    runCommand(@"/Library/batchomatic/convert.sh 9");
+    
+    runCommand(@"/Library/batchomatic/convert.sh 10");
+    endProcessingDialog(@"Done!\nSuccesfully converted your old .deb!\nIt's at /var/mobile/BatchomaticDebs\n\nBefore you can use it, you need to remove the current BatchInstall tweak and install the converted .deb", self, 1, false);
 }
 
 void createOfflineDeb(id self) { //creates a .deb with .debs of the user's tweaks, their saved .debs, tweak preferences, and hosts file. Repos and the list of tweaks to queue are NOT included
     maxSteps = 3;
+    NSString *motherMessage = showProcessingDialog(self, @"Creating your offline .deb....\n", true, 1, true);
     
-    showProcessingDialog(self, @"Creating your custom offline .deb....", true, 1, true);
-    runCommand(@"/Library/batchomatic/createoffline-part1.sh");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Running initial setup"]);
+    runCommand(@"/Library/batchomatic/createoffline.sh 1");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Setting up filesystem"]);
+    runCommand(@"/Library/batchomatic/createoffline.sh 2");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Creating control file"]);
+    runCommand(@"/Library/batchomatic/createoffline.sh 3");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering tweak preferences"]);
+    runCommand(@"/Library/batchomatic/createoffline.sh 4");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering hosts file"]);
+    runCommand(@"/Library/batchomatic/createoffline.sh 5");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Gathering saved debs"]);
+    runCommand(@"/Library/batchomatic/createoffline.sh 6");
+    transitionProgressMessage([NSString stringWithFormat:@"%@%@", motherMessage, @"Preparing"]);
+    runCommand(@"/Library/batchomatic/createoffline.sh 7");
     
-    NSString *motherMessage = updateProgressMessage(@"Creating .debs of your tweaks. This could take several minutes....");
+    motherMessage = updateProgressMessage(@"Creating .debs of your tweaks. This could take several minutes....");
     FILE *tweaksToCreateDebsForFile = fopen("/tmp/batchomatic/tweaks.txt", "r");
-    
     while (!feof(tweaksToCreateDebsForFile)) {
         NSString *thePackageIdentifer = readEachLineOfFile(tweaksToCreateDebsForFile);
         transitionProgressMessage([NSString stringWithFormat:@"%@%@%@", motherMessage, @"\n", thePackageIdentifer]);
         
-        NSString *theCommand = [NSString stringWithFormat:@"/Library/batchomatic/createoffline-part2.sh %@", thePackageIdentifer];
+        NSString *theCommand = [NSString stringWithFormat:@"/Library/batchomatic/createoffline.sh 8 %@", thePackageIdentifer];
         runCommand(theCommand);
     }
     fclose(tweaksToCreateDebsForFile);
     
-    updateProgressMessage(@"Building your custom offline .deb....");
-    FILE *timestampFile = fopen("/tmp/batchomatic/timestamp.txt", "r");
-    NSString *scriptTimestamp = readEachLineOfFile(timestampFile);
-    NSString *theCommand = [NSString stringWithFormat:@"/Library/batchomatic/createoffline-part3.sh %@", scriptTimestamp];
-    runCommand(theCommand);
+    updateProgressMessage(@"Building final .deb....");
+    runCommand(@"/Library/batchomatic/createoffline.sh 9");
     
-    endProcessingDialog(@"Done!\nSuccesfully created your offline .deb!\nIt's at /var/mobile/BatchomaticDebs", self, false, false);
+    runCommand(@"/Library/batchomatic/createoffline.sh 10");
+    endProcessingDialog(@"Done!\nSuccesfully created your offline .deb!\nIt's at /var/mobile/BatchomaticDebs", self, 1, false);
 }
 
 void removeAll(id self) { //Removes ALL of the user's tweaks. All of them. This is like a wannabe Restore RootFS
     maxSteps = 1;
     showProcessingDialog(self, @"Removing all tweaks....", true, 1, true);
-    runCommand(@"/Library/batchomatic/removealltweaks.sh");
-    FILE *removeAllTweaksFile = fopen("/tmp/batchomatic/removeall.txt", "r");
     
+    if (removeEverythingSwitch == true) {
+        runCommand(@"/Library/batchomatic/removealltweaks.sh 1");
+    }
+    else {
+        runCommand(@"/Library/batchomatic/removealltweaks.sh 0");
+    }
+    
+    FILE *removeAllTweaksFile = fopen("/tmp/batchomatic/removeall.txt", "r");
     if (packageManager == 1) {
         while (!feof(removeAllTweaksFile)) {
             NSString *thePackageIdentifer = readEachLineOfFile(removeAllTweaksFile);
@@ -921,16 +1047,36 @@ void convertDebClient(id self) { //asks the user if they installed all of the ne
     [self presentViewController:noticeAlert animated:YES completion:nil];
 }
 
+void removeAllClient(id self) {
+    UIAlertController *optionsAlert = [UIAlertController alertControllerWithTitle:@"Batchomatic" message:@"Removing all tweaks" preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *proceedAction = [UIAlertAction actionWithTitle:@"Proceed" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {removeAll(self);}];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
+    
+    [optionsAlert addAction:proceedAction];
+    [optionsAlert addAction:cancelAction];
+    
+    UIStackView *combinedStackView = create1Switch(self);
+    [optionsAlert.view addSubview:combinedStackView];
+    [combinedStackView.centerXAnchor constraintEqualToAnchor:optionsAlert.view.centerXAnchor].active = YES;
+    combinedStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    [combinedStackView.topAnchor constraintEqualToAnchor:optionsAlert.view.topAnchor constant:64].active = YES;
+    [optionsAlert.view layoutIfNeeded];
+    CGFloat height = optionsAlert.view.bounds.size.height + optionsAlert.actions.count * 52 + combinedStackView.bounds.size.height;
+    [optionsAlert.view.heightAnchor constraintEqualToConstant:height].active = YES;
+    
+    [self presentViewController:optionsAlert animated:YES completion:nil];
+}
+
 void buttonTapped(id self) { //shows the mother UIAlertController
-    NSString *alertTitle = [@"Batchomatic " stringByAppendingString:batchomaticVersion];
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:alertTitle message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Batchomatic v3.1" message:nil preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *createDebAction = [UIAlertAction actionWithTitle:@"Create .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { createDeb(self); }];
     UIAlertAction *installDebAction = [UIAlertAction actionWithTitle:@"Install .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { installDebClient(self); }];
     UIAlertAction *convertDebAction = [UIAlertAction actionWithTitle:@"Convert old .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { convertDebClient(self); }];
     UIAlertAction *createOfflineDebAction = [UIAlertAction actionWithTitle:@"Create offline .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { createOfflineDeb(self); }];
-    UIAlertAction *removeAllAction = [UIAlertAction actionWithTitle:@"Remove all tweaks" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { removeAll(self); }];
-    UIAlertAction *respringAction = [UIAlertAction actionWithTitle:@"Respring/uicache" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { endProcessingDialog(nil, self, true, false); }];
+    UIAlertAction *removeAllAction = [UIAlertAction actionWithTitle:@"Remove all tweaks" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { removeAllClient(self); }];
+    UIAlertAction *respringAction = [UIAlertAction actionWithTitle:@"Respring/uicache" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { endProcessingDialog(nil, self, 2, false); }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
     
     [alert addAction:createDebAction];
@@ -1032,6 +1178,15 @@ void buttonTapped(id self) { //shows the mother UIAlertController
         respringSwitchStatus = false;
     }
 }
+%new
+- (void) removeEverythingSwitchTapped:(UISwitch *)theSwitch {
+    if ([theSwitch isOn]) {
+        removeEverythingSwitch = true;
+    }
+    else {
+        removeEverythingSwitch = false;
+    }
+}
 %end
 
 %hook Cydia
@@ -1049,8 +1204,17 @@ void buttonTapped(id self) { //shows the mother UIAlertController
             queueTweaks(cydiaSearchControllerID);
         }
         else {
-            endProcessingDialog(@"Done! Succesfully installed your .deb!", cydiaSearchControllerID, true, true);
+            endProcessingDialog(@"Done! Succesfully installed your .deb!", cydiaSearchControllerID, 2, true);
         }
+    }
+}
+
+- (void) _loaded {
+    if (refreshesCompleted != 0) {
+        return;
+    }
+    else {
+        %orig;
     }
 }
 %end
@@ -1143,6 +1307,15 @@ void buttonTapped(id self) { //shows the mother UIAlertController
         respringSwitchStatus = false;
     }
 }
+%new
+- (void) removeEverythingSwitchTapped:(UISwitch *)theSwitch {
+    if ([theSwitch isOn]) {
+        removeEverythingSwitch = true;
+    }
+    else {
+        removeEverythingSwitch = false;
+    }
+}
 %end
 
 %hook ZBTabBarController
@@ -1162,7 +1335,7 @@ void buttonTapped(id self) { //shows the mother UIAlertController
                 [zebraZBSearchViewControllerID presentViewController:progressAlert animated:true completion:^{ queueTweaks(zebraZBSearchViewControllerID); }];
             }
             else {
-                endProcessingDialog(@"Done! Succesfully installed your .deb!", zebraZBSearchViewControllerID, true, false);
+                endProcessingDialog(@"Done! Succesfully installed your .deb!", zebraZBSearchViewControllerID, 2, false);
             }
         }
     }
@@ -1174,7 +1347,7 @@ void buttonTapped(id self) { //shows the mother UIAlertController
             [zebraZBSearchViewControllerID presentViewController:progressAlert animated:true completion:^{ queueTweaks(zebraZBSearchViewControllerID); }];
         }
         else {
-            endProcessingDialog(@"Done! Succesfully installed your .deb!", zebraZBSearchViewControllerID, true, false);
+            endProcessingDialog(@"Done! Succesfully installed your .deb!", zebraZBSearchViewControllerID, 2, false);
         }
     }
 }
@@ -1199,7 +1372,7 @@ void buttonTapped(id self) { //shows the mother UIAlertController
 
 //--------------------------------------------------------------------------------------------------------------------------
 //hooks for compatibility with Sileo
-%hook PackageListViewController
+%hook _TtC5Sileo25PackageListViewController
 - (void) viewDidLoad {
     %orig;
     sileoPackageListViewControllerID = self;
@@ -1287,6 +1460,15 @@ void buttonTapped(id self) { //shows the mother UIAlertController
         respringSwitchStatus = false;
     }
 }
+%new
+- (void) removeEverythingSwitchTapped:(UISwitch *)theSwitch {
+    if ([theSwitch isOn]) {
+        removeEverythingSwitch = true;
+    }
+    else {
+        removeEverythingSwitch = false;
+    }
+}
 %end
 
 %hook SourcesViewController
@@ -1315,7 +1497,7 @@ void buttonTapped(id self) { //shows the mother UIAlertController
             });
         }
         else {
-            endProcessingDialog(@"Done! Succesfully installed your .deb!", sileoPackageListViewControllerID, true, true);
+            endProcessingDialog(@"Done! Succesfully installed your .deb!", sileoPackageListViewControllerID, 2, true);
         }
     }
 }
@@ -1409,6 +1591,15 @@ void buttonTapped(id self) { //shows the mother UIAlertController
         respringSwitchStatus = false;
     }
 }
+%new
+- (void) removeEverythingSwitchTapped:(UISwitch *)theSwitch {
+    if ([theSwitch isOn]) {
+        removeEverythingSwitch = true;
+    }
+    else {
+        removeEverythingSwitch = false;
+    }
+}
 %end
 
 %hook ManageViewController
@@ -1436,7 +1627,7 @@ void buttonTapped(id self) { //shows the mother UIAlertController
             [installerSearchViewControllerID presentViewController:progressAlert animated:true completion:^{ queueTweaks(installerSearchViewControllerID); }];
         }
         else {
-            endProcessingDialog(@"Done! Succesfully installed your .deb!", installerSearchViewControllerID, true, false);
+            endProcessingDialog(@"Done! Succesfully installed your .deb!", installerSearchViewControllerID, 2, false);
         }
     }
 }

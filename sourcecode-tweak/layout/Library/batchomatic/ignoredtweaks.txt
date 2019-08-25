@@ -72,6 +72,8 @@ us.diatr.sileorespring
 us.diatr.sillyo
 libressl
 org.swift.libswift
+file-cmds
+text-cmds
 cy+model.ipad
 cy+model.ipod
 cy+cpu.arm64e
@@ -81,3 +83,4 @@ com.ex.libsubstitute
 org.coolstar.tweakinject
 openssh
 zsh
+com.you.batchinstall
