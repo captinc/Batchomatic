@@ -11,7 +11,7 @@ Price: **Free!**
 
 [Additional information available in the reddit post](https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/)
 
-[Screenshots](https://imgur.com/a/u70Cojx)
+[Screenshots](https://imgur.com/a/3FwCcaM)
 
 # How to compile
 1. Install Theos on your Mac
