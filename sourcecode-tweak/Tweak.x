@@ -10,6 +10,8 @@
 //--------------------------------------------------------------------------------------------------------------------------
 //global variables
 int packageManager;
+int refreshesCompleted = 0;
+bool placedBatchomaticButton = false;
 
 bool prefsSwitchStatus;
 bool savedDebsSwitchStatus;
@@ -25,10 +27,8 @@ UIAlertController *progressAlert;
 UIActivityIndicatorView *spinner;
 int maxSteps;
 int currentStep;
-
 NSMutableString *unfindableTweaks;
 bool shouldShowUnfindableTweaks = false;
-int refreshesCompleted = 0;
 
 id cydiaSearchControllerID;
 id zebraZBSearchViewControllerID;
@@ -186,18 +186,15 @@ UIStackView *create5Switches(id self) { //combines 6 UIStackViews from above to 
 
 UIStackView *create2Switches(id self) { //combines 2 UIStackViews from above to create a UIAlertController with 2 toggles inside of it
     UILabel *emptySpaceLabel = [[UILabel alloc] init];
-    emptySpaceLabel.text = @"";
+    emptySpaceLabel.text = @" ";
     [emptySpaceLabel sizeToFit];
-    UIStackView *emptySpaceStackView1 = [[UIStackView alloc] init];
-    [emptySpaceStackView1 addArrangedSubview:emptySpaceLabel];
-    UIStackView *emptySpaceStackView2 = [[UIStackView alloc] init];
-    [emptySpaceStackView2 addArrangedSubview:emptySpaceLabel];
+    UIStackView *emptySpaceStackView = [[UIStackView alloc] init];
+    [emptySpaceStackView addArrangedSubview:emptySpaceLabel];
     
     UIStackView *combinedStackView = [[UIStackView alloc] init];
     combinedStackView.axis = UILayoutConstraintAxisVertical;
     combinedStackView.spacing = 10;
-    [combinedStackView addArrangedSubview:emptySpaceStackView1];
-    [combinedStackView addArrangedSubview:emptySpaceStackView2];
+    [combinedStackView addArrangedSubview:emptySpaceStackView];
     [combinedStackView addArrangedSubview:createASwitchWithLabel(self, @"Run uicache?", NO, @selector(uicacheSwitchTapped:))];
     [combinedStackView addArrangedSubview:createASwitchWithLabel(self, @"Respring?", YES, @selector(respringSwitchTapped:))];
     uicacheSwitchStatus = false;
@@ -208,7 +205,7 @@ UIStackView *create2Switches(id self) { //combines 2 UIStackViews from above to 
 
 UIStackView *create1Switch(id self) { //finalizes the 1 UIStackView from above to create a UIAlertController with 1 toggle inside of it
     UILabel *emptySpaceLabel = [[UILabel alloc] init];
-    emptySpaceLabel.text = @"";
+    emptySpaceLabel.text = @" ";
     [emptySpaceLabel sizeToFit];
     UIStackView *emptySpaceStackView = [[UIStackView alloc] init];
     [emptySpaceStackView addArrangedSubview:emptySpaceLabel];
@@ -331,7 +328,7 @@ void endProcessingDialog(NSString *theMessage, UIViewController *self, int kindO
         NSString *uicacheCommand;
         NSString *respringCommand;
         NSString *uicacheAndRespringCommand;
-        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11.0) {
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 12.0) {
             uicacheCommand = @"uicache --all";
             respringCommand = @"sbreload";
             uicacheAndRespringCommand = @"uicache --all --respring";
@@ -477,26 +474,24 @@ void sileoFixDependencies(NSMutableString *unfindableTweaks) {
 
 //--------------------------------------------------------------------------------------------------------------------------
 //methods to actually install any available .debs, add your repos, and queue your tweaks
-void installSavedDebs(NSString *motherMessage, NSString *pathToDebsFolder, id self) { //installs all .debs at the given path and updates the UIAlertController about what .deb is being installed right now
+void installAllDebsInFolder(NSString *motherMessage, NSString *pathToDebsFolder, id self) { //installs all .debs at the given path and updates the UIAlertController about what .deb is being installed right now
+    runCommand(@"mkdir /tmp/batchomatic");
+    runCommand(@"mkdir /tmp/batchomatic/tempdebs");
+    runCommand([NSString stringWithFormat:@"mv %@%@", pathToDebsFolder, @"/com.captinc.batchomatic*.deb /tmp/batchomatic/tempdebs"]);
+    runCommand([NSString stringWithFormat:@"mv %@%@", pathToDebsFolder, @"/xyz.willy.zebra*.deb /tmp/batchomatic/tempdebs"]);
+    runCommand([NSString stringWithFormat:@"mv %@%@", pathToDebsFolder, @"/me.apptapp.installer*.deb /tmp/batchomatic/tempdebs"]);
+    
     NSDirectoryEnumerator *directoryEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:pathToDebsFolder];
     for (NSString *debFileName in directoryEnumerator) {
         if ([[debFileName pathExtension] isEqualToString:@"deb"]) {
             NSString *thePackageIdentifer = runCommand([NSString stringWithFormat:@"prefix=\" Package: \" && dpkg --info %@%@%@%@", pathToDebsFolder, @"/", debFileName, @" | grep \"Package: \" | sed -e \"s/^$prefix//\""]);
-            
-            if ([thePackageIdentifer isEqualToString:@"com.captinc.batchomatic"]) {
-                continue;
-            }
-            if (packageManager == 2 && [thePackageIdentifer isEqualToString:@"xyz.willy.zebra"]) {
-                continue;
-            }
-            if (packageManager == 4 && [thePackageIdentifer isEqualToString:@"me.apptapp.installer"]) {
-                continue;
-            }
-            
             transitionProgressMessage([NSString stringWithFormat:@"%@%@%@", motherMessage, @"\n", thePackageIdentifer]);
             runCommand([NSString stringWithFormat:@"batchomaticd 6 %@%@%@", pathToDebsFolder, @"/", debFileName]);
         }
     }
+    
+    runCommand([NSString stringWithFormat:@"mv /tmp/batchomatic/tempdebs/*.deb %@", pathToDebsFolder]);
+    runCommand(@"rm -r /tmp/batchomatic");
 }
 
 void queueTweaks(id self) { //adds all of the user's tweaks to the queue if they are not already installed. Also tells the user if we cannot find some of their tweaks. This is caused when the repo for said tweak is not added, or said tweak was installed from a .deb, so therefore it has no repo
@@ -830,7 +825,7 @@ void installDeb(id self) { //determines what the user wants to be installed and 
     
     if (savedDebsSwitchStatus == true) {
         NSString *motherMessage = updateProgressMessage(@"Installing saved .debs....");
-        installSavedDebs(motherMessage, @"/var/mobile/BatchInstall/SavedDebs", self);
+        installAllDebsInFolder(motherMessage, @"/var/mobile/BatchInstall/SavedDebs", self);
     }
     
     if (hostsSwitchStatus == true) {
@@ -842,7 +837,7 @@ void installDeb(id self) { //determines what the user wants to be installed and 
     
     if (offlineDebsSwitchStatus == true) {
         NSString *motherMessage = updateProgressMessage(@"Installing offline .debs....");
-        installSavedDebs(motherMessage, @"/var/mobile/BatchInstall/OfflineDebs", self);
+        installAllDebsInFolder(motherMessage, @"/var/mobile/BatchInstall/OfflineDebs", self);
     }
     
     if (reposSwitchStatus == true) {
@@ -936,7 +931,7 @@ void createOfflineDeb(id self) { //creates a .deb with .debs of the user's tweak
 
 void removeAll(id self) { //Removes ALL of the user's tweaks. All of them. This is like a wannabe Restore RootFS
     maxSteps = 1;
-    showProcessingDialog(self, @"Removing all tweaks....", true, 1, true);
+    showProcessingDialog(self, @"Removing tweaks....", true, 1, true);
     
     if (removeEverythingSwitch == true) {
         runCommand(@"/Library/batchomatic/removealltweaks.sh 1");
@@ -1048,7 +1043,7 @@ void convertDebClient(id self) { //asks the user if they installed all of the ne
 }
 
 void removeAllClient(id self) {
-    UIAlertController *optionsAlert = [UIAlertController alertControllerWithTitle:@"Batchomatic" message:@"Removing all tweaks" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *optionsAlert = [UIAlertController alertControllerWithTitle:@"Batchomatic" message:@"When this switch is OFF, Zebra/Installer/Filza/Batchomatic/BatchInstall will stay" preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *proceedAction = [UIAlertAction actionWithTitle:@"Proceed" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {removeAll(self);}];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
@@ -1069,21 +1064,23 @@ void removeAllClient(id self) {
 }
 
 void buttonTapped(id self) { //shows the mother UIAlertController
-    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Batchomatic v3.1" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Batchomatic v3.2" message:nil preferredStyle:UIAlertControllerStyleAlert];
     
     UIAlertAction *createDebAction = [UIAlertAction actionWithTitle:@"Create .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { createDeb(self); }];
+    UIAlertAction *createOfflineDebAction = [UIAlertAction actionWithTitle:@"Create offline .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { createOfflineDeb(self); }];
     UIAlertAction *installDebAction = [UIAlertAction actionWithTitle:@"Install .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { installDebClient(self); }];
     UIAlertAction *convertDebAction = [UIAlertAction actionWithTitle:@"Convert old .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { convertDebClient(self); }];
-    UIAlertAction *createOfflineDebAction = [UIAlertAction actionWithTitle:@"Create offline .deb" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { createOfflineDeb(self); }];
     UIAlertAction *removeAllAction = [UIAlertAction actionWithTitle:@"Remove all tweaks" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { removeAllClient(self); }];
+    UIAlertAction *helpAction = [UIAlertAction actionWithTitle:@"Help" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { runCommand(@"uiopen https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/"); }];
     UIAlertAction *respringAction = [UIAlertAction actionWithTitle:@"Respring/uicache" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) { endProcessingDialog(nil, self, 2, false); }];
     UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
     
     [alert addAction:createDebAction];
     [alert addAction:installDebAction];
-    [alert addAction:convertDebAction];
     [alert addAction:createOfflineDebAction];
+    [alert addAction:convertDebAction];
     [alert addAction:removeAllAction];
+    [alert addAction:helpAction];
     [alert addAction:respringAction];
     [alert addAction:cancelAction];
     [self presentViewController:alert animated:YES completion:nil];
@@ -1375,10 +1372,13 @@ void buttonTapped(id self) { //shows the mother UIAlertController
 %hook _TtC5Sileo25PackageListViewController
 - (void) viewDidLoad {
     %orig;
-    sileoPackageListViewControllerID = self;
-    if ([self.title isEqualToString:@"Search"]) {
-        UIBarButtonItem *batchomaticButton = [[UIBarButtonItem alloc] initWithTitle:@"Batchomatic" style:UIBarButtonItemStylePlain target:self action:@selector(startBatchomatic)];
-        [[self navigationItem] setLeftBarButtonItem:batchomaticButton];
+    if (placedBatchomaticButton == false) {
+        sileoPackageListViewControllerID = self;
+        if (!self.navigationItem.rightBarButtonItem) {
+            UIBarButtonItem *batchomaticButton = [[UIBarButtonItem alloc] initWithTitle:@"Batchomatic" style:UIBarButtonItemStylePlain target:self action:@selector(startBatchomatic)];
+            [[self navigationItem] setLeftBarButtonItem:batchomaticButton];
+            placedBatchomaticButton = true;
+        }
     }
 }
 

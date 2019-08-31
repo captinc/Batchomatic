@@ -7,6 +7,5 @@ me.apptapp.installer
 com.tigisoftware.filza
 zip
 unzip
-gzip
 unrar
 p7zip

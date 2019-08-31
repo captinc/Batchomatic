@@ -15,7 +15,6 @@ step2 () {
     mkdir /tmp/batchomatic/create/var
     mkdir /tmp/batchomatic/create/var/mobile
     mkdir /tmp/batchomatic/create/var/mobile/BatchInstall
-    mkdir /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
     mkdir /tmp/batchomatic/create/var/mobile/BatchInstall/SavedDebs
     echo "LOG: completed filesystem setup"
 }
@@ -52,16 +51,18 @@ step5 () {
     echo "LOG: gathered repos"
 }
 step6 () {
-    find /var/mobile/BatchInstall -type f -exec chmod 777 {} \;
-    find /var/mobile/BatchInstall -type d -exec chmod 777 {} \;
+    batchomaticd 9
     hostsFile=/var/mobile/BatchInstall/hosts
     if test -f "$hostsFile"; then
-    cp -r /var/mobile/BatchInstall/TweakPreferences/* /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
+    cp -r /var/mobile/BatchInstall/TweakPreferences /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
     cp /var/mobile/BatchInstall/hosts /tmp/batchomatic/create/var/mobile/BatchInstall
     else
-    cp -r /var/mobile/BatchInstall/* /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
+    cp -r /var/mobile/BatchInstall /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
     batchomaticd 1
     fi
+
+    batchomaticd 8
+    rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.apple* 2>/dev/null
     cp /var/mobile/Library/Caches/libactivator.plist /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/libactivator.exported.plist 2>/dev/null
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/.Global* 2>/dev/null
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.google* 2>/dev/null

@@ -1,6 +1,6 @@
 Package: com.captinc.batchomatic
 Name: Batchomatic
-Version: 3.1
+Version: 3.2
 Author: Capt Inc <captinc37@gmail.com>
 Maintainer: Capt Inc <captinc37@gmail.com>
 Depends: mobilesubstrate, gawk, coreutils

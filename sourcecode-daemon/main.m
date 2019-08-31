@@ -79,6 +79,24 @@ int main(int argc, char *argv[], char *envp[]) {
         [args addObject:@"-i"];
         [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
     }
+    else if (!strcmp(argv[1], "7")) {
+        [task setLaunchPath:@"/bin/cp"];
+        [args addObject:@"-r"];
+        [args addObject:@"/var/mobile/Library/Preferences"];
+        [args addObject:@"/tmp/batchomatic/create/var/mobile/BatchInstall"];
+    }
+    else if (!strcmp(argv[1], "8")) {
+        [task setLaunchPath:@"/bin/chmod"];
+        [args addObject:@"-R"];
+        [args addObject:@"777"];
+        [args addObject:@"/tmp/batchomatic/create/var/mobile/BatchInstall/Preferences"];
+    }
+    else if (!strcmp(argv[1], "9")) {
+        [task setLaunchPath:@"/bin/chmod"];
+        [args addObject:@"-R"];
+        [args addObject:@"777"];
+        [args addObject:@"/var/mobile/BatchInstall"];
+    }
     else {
         printf("Error: you did not pick a valid command\n");
         return 1;

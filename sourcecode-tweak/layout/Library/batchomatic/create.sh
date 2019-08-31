@@ -15,7 +15,6 @@ step2 () {
     mkdir /tmp/batchomatic/create/var
     mkdir /tmp/batchomatic/create/var/mobile
     mkdir /tmp/batchomatic/create/var/mobile/BatchInstall
-    mkdir /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
     mkdir /tmp/batchomatic/create/var/mobile/BatchInstall/SavedDebs
     echo "LOG: completed filesystem setup"
 }
@@ -52,7 +51,9 @@ step5 () {
     echo "LOG: gathered repos"
 }
 step6 () {
-    cp -R `ls -d /var/mobile/Library/Preferences/* | grep -v 'com.apple'` /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
+    batchomaticd 7
+    batchomaticd 8
+    rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.apple* 2>/dev/null
     cp /var/mobile/Library/Caches/libactivator.plist /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/libactivator.exported.plist 2>/dev/null
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/.Global* 2>/dev/null
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.google* 2>/dev/null

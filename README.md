@@ -3,9 +3,9 @@ TL;DR - a tweak to batch install all of your other tweaks, repos, saved .debs, t
 
 Compatible with all devices on iOS 11.0-12.4. Works with Cydia, Zebra, Sileo, and Installer on unc0ver, unc0ver dark, and Chimera. Might work on older iOS versions too
 
-Repo: BigBoss
+Repo: **BigBoss**
 
-Price: Free!
+Price: **Free!**
 
 [Direct .deb download](https://github.com/captinc/Batchomatic/raw/master/com.captinc.batchomatic.deb)
 
@@ -21,4 +21,4 @@ Price: Free!
 A new .deb will now be in the "Batchomatic-master" folder
 
 # License
-Please do not repackage my tweak, call it your own, and then redistribute it. You can use individual parts of my code for your own stuff though. If you have any questions, just [PM me on reddit](https://reddit.com/u/captinc37)
+Please do not repackage my tweak, call it your own, and then redistribute it. You can use **individual** parts of my code for your own **non-paid** projects. If you have any questions, [PM me on reddit](https://reddit.com/u/captinc37)

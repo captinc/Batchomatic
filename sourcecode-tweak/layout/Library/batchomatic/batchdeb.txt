@@ -1,0 +1,11 @@
+if [ -z "$1" ]; then
+echo "Error: you did not specify a package identifier"
+exit 1
+fi
+
+if [ -z "$2" ]; then
+echo "Error: you did not specify an output path"
+exit 1
+fi
+
+/Library/batchomatic/createoffline.sh 8 $1 $2

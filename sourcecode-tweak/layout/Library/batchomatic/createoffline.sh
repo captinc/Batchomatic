@@ -16,7 +16,6 @@ step2 () {
     mkdir /tmp/batchomatic/create/var
     mkdir /tmp/batchomatic/create/var/mobile
     mkdir /tmp/batchomatic/create/var/mobile/BatchInstall
-    mkdir /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
     mkdir /tmp/batchomatic/create/var/mobile/BatchInstall/SavedDebs
     mkdir /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs
     echo "LOG: completed filesystem setup"
@@ -37,7 +36,9 @@ step3 () {
 }
 
 step4 () {
-    cp -R `ls -d /var/mobile/Library/Preferences/* | grep -v 'com.apple'` /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences
+    batchomaticd 7
+    batchomaticd 8
+    rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.apple* 2>/dev/null
     cp /var/mobile/Library/Caches/libactivator.plist /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/libactivator.exported.plist 2>/dev/null
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/.Global* 2>/dev/null
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.google* 2>/dev/null
@@ -70,6 +71,12 @@ step7 () {
 }
 
 step8() {
+    if ! [ -z "$2" ]; then
+        rm -r /tmp/batchomatic 2>/dev/null
+        mkdir /tmp/batchomatic
+        mkdir /tmp/batchomatic/builddeb
+    fi
+
     eachTweak=$1
     mkdir /tmp/batchomatic/builddeb/DEBIAN
 
@@ -90,19 +97,28 @@ step8() {
         filesToCopy=`dpkg-query -L $eachTweak`
     fi
 
+    IFS=$'\n'
     for aFile in $filesToCopy
     do
         if [ -d "$aFile" ]; then
             mkdir -p "/tmp/batchomatic/builddeb$aFile"
         elif [ -f "$aFile" ]; then
-            cp -p $aFile "/tmp/batchomatic/builddeb$aFile"
+            cp -p "$aFile" "/tmp/batchomatic/builddeb$aFile"
         fi
     done
 
     find /tmp/batchomatic/builddeb -name ".DS_Store" -type f -delete 2>/dev/null
-    dpkg -b /tmp/batchomatic/builddeb /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs
-    rm -r /tmp/batchomatic/builddeb/*
-    echo "LOG: created deb of one tweak"
+
+    if ! [ -z "$2" ]; then
+        outputPath=$2
+        dpkg -b /tmp/batchomatic/builddeb $outputPath
+        rm -r /tmp/batchomatic
+        echo "LOG: created deb of specified tweak"
+    else
+        dpkg -b /tmp/batchomatic/builddeb /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs
+        rm -r /tmp/batchomatic/builddeb/*
+        echo "LOG: created deb of one tweak"
+    fi
 }
 
 step9 () {
@@ -133,7 +149,7 @@ elif [ "$1" = 6 ]; then
 elif [ "$1" = 7 ]; then
     step7
 elif [ "$1" = 8 ]; then
-    step8 $2
+    step8 $2 $3
 elif [ "$1" = 9 ]; then
     step9
 elif [ "$1" = 10 ]; then
