@@ -3,7 +3,7 @@
 echo ""
 echo "To finish installing your .deb:"
 echo "1. Install Batchomatic from BigBoss"
-echo "2. Go to the 'Search' tab" in your package manager
-echo "3. Tap 'Batchomatic' at the top"
+echo "2. Go to the Search tab in your package manager"
+echo "3. Tap Batchomatic at the top"
 echo "4. Tap 'Install .deb'"
 exit 0

@@ -1,0 +1,8 @@
+com.captinc.batchomatic
+com.tigisoftware.filza
+me.apptapp.installer
+p7zip
+unrar
+unzip
+xyz.willy.zebra
+zip

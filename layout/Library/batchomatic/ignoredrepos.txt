@@ -1,3 +1,4 @@
+http://apt.bingner.com/
 https://apt.bingner.com/
 https://diatr.us/apt/
 https://diatr.us/sileodark/
