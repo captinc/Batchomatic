@@ -7,7 +7,7 @@ Repo: **BigBoss**
 
 Price: **Free!**
 
-[Direct .deb download](https://github.com/captinc/batchomatic/releases/download/v4.0/com.captinc.batchomatic.deb)
+[Direct .deb download](https://github.com/captinc/Batchomatic/releases/download/v4.0/com.captinc.batchomatic_4.0_iphoneos-arm.deb)
 
 [Additional information available in the reddit post](https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/)
 
