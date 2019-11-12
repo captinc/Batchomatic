@@ -1,14 +1,14 @@
-//Batchomatic v4.0 - Created by /u/CaptInc37
+//Batchomatic v4.1 - Created by /u/CaptInc37
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-#import <headers/batchomatic.h>
+#import <headers/Batchomatic.h>
 #import <headers/NSTask.h>
 extern int refreshesCompleted; //this variable is used for telling my tweak what we should do next during add repos. It also ensures that my extra code in the hooks only executes if we are currently using Batchomatic
 //Note: when I set that variable as an @property, I ran into some weird bug where it wasn't keeping track of its value. Setting it as a normal C global variable fixed that
 int refreshesCompleted = 0;
 
-@implementation batchomatic
+@implementation Batchomatic
 + (id)sharedInstance { //returns the instance of the Batchomatic class (so you can access the Batchomatic code from anywhere)
-    static batchomatic *singleton;
+    static Batchomatic *singleton;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         singleton = [[self alloc] init];
@@ -82,7 +82,7 @@ int refreshesCompleted = 0;
         [self.spinner stopAnimating];
         UIAlertAction *contactAction = [UIAlertAction actionWithTitle:@"Contact developer" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : @NO};
-            [[UIApplication sharedApplication] openURL:[NSURL URLWithString: @"https://www.reddit.com/message/compose/?to=captinc37&subject=Batchomatic%20creation%20fatal%20error"] options:options completionHandler:nil];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/message/compose/?to=captinc37&subject=Batchomatic%20creation%20fatal%20error"] options:options completionHandler:nil];
         }];
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Dismiss" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {}];
         [self.processingDialog addAction:contactAction];
@@ -433,7 +433,13 @@ int refreshesCompleted = 0;
     combinedStackView.translatesAutoresizingMaskIntoConstraints = NO;
     [combinedStackView.topAnchor constraintEqualToAnchor:optionsAlert.view.topAnchor constant:64].active = YES;
     [optionsAlert.view layoutIfNeeded];
-    CGFloat height = optionsAlert.view.bounds.size.height + optionsAlert.actions.count*52 + combinedStackView.bounds.size.height;
+    CGFloat height;
+    if (@available(iOS 13, *)) {
+        height = optionsAlert.view.bounds.size.height + optionsAlert.actions.count;
+    }
+    else {
+        height = optionsAlert.view.bounds.size.height + optionsAlert.actions.count*52 + combinedStackView.bounds.size.height;
+    }
     [optionsAlert.view.heightAnchor constraintEqualToConstant:height].active = YES;
     
     [self.bm_currentBMController presentViewController:optionsAlert animated:YES completion:nil];
@@ -559,7 +565,12 @@ int refreshesCompleted = 0;
     self.processingDialog = [UIAlertController alertControllerWithTitle:@"Batchomatic" message:totalMessage preferredStyle:UIAlertControllerStyleAlert];
     
     UIViewController *progressStatus = [[UIViewController alloc] init]; //these next few lines create a UIActivityIndicator inside of a UIAlertController (the spinning wheel)
-    self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    if (@available(iOS 13, *)) {
+        self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+    }
+    else {
+        self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    }
     self.spinner.hidesWhenStopped = YES;
     [self.spinner startAnimating];
     [progressStatus.view addSubview:self.spinner];
@@ -574,7 +585,7 @@ int refreshesCompleted = 0;
 }
 
 - (void)transitionProgressMessage:(NSString *)theMessage { //only transitions the text of the processing dialog
-    [UIView transitionWithView: self.processingDialog.view duration: 0.3 options: UIViewAnimationOptionTransitionCrossDissolve animations: ^(void) { self.processingDialog.message = theMessage; } completion: nil];
+    [UIView transitionWithView:self.processingDialog.view duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^(void) { self.processingDialog.message = theMessage; } completion:nil];
 }
 
 - (NSString *)updateProgressMessage:(NSString *)wordMessage { //increments what stage we are on and transitions the text
@@ -626,7 +637,13 @@ int refreshesCompleted = 0;
         [combinedStackView.centerXAnchor constraintEqualToAnchor:self.processingDialog.view.centerXAnchor].active = YES;
         [combinedStackView.topAnchor constraintEqualToAnchor:self.processingDialog.view.topAnchor constant:64].active = YES;
         [self.processingDialog.view layoutIfNeeded];
-        CGFloat height = self.processingDialog.view.bounds.size.height + self.processingDialog.actions.count*52 + combinedStackView.bounds.size.height;
+        CGFloat height;
+        if (@available(iOS 13, *)) {
+            height = self.processingDialog.view.bounds.size.height + self.processingDialog.actions.count + combinedStackView.bounds.size.height;
+        }
+        else {
+            height = self.processingDialog.view.bounds.size.height + self.processingDialog.actions.count*52 + combinedStackView.bounds.size.height;
+        }
         [self.processingDialog.view.heightAnchor constraintEqualToConstant:height].active = YES;
         
         [self transitionProgressMessage:theMessage];
@@ -643,7 +660,13 @@ int refreshesCompleted = 0;
         [combinedStackView.centerXAnchor constraintEqualToAnchor:alert.view.centerXAnchor].active = YES;
         [combinedStackView.topAnchor constraintEqualToAnchor:alert.view.topAnchor constant:64].active = YES;
         [alert.view layoutIfNeeded];
-        CGFloat height = alert.view.bounds.size.height + alert.actions.count*52 + combinedStackView.bounds.size.height;
+        CGFloat height;
+        if (@available(iOS 13, *)) {
+            height = alert.view.bounds.size.height + alert.actions.count + combinedStackView.bounds.size.height;
+        }
+        else {
+            height = alert.view.bounds.size.height + alert.actions.count*52 + combinedStackView.bounds.size.height;
+        }
         [alert.view.heightAnchor constraintEqualToConstant:height].active = YES;
         
         if (shouldPresentImmediately) {

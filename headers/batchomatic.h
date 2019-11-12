@@ -2,7 +2,7 @@
 #import "BMHomeTableViewController.h"
 
 //headers for my tweak's own functions
-@interface batchomatic : NSObject
+@interface Batchomatic : NSObject
 @property id motherClass;
 @property id bm_currentBMController;
 @property BMHomeTableViewController *bm_BMHomeTableViewController;

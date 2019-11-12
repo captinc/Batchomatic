@@ -11,7 +11,7 @@ step2 () {
     mkdir -p /tmp/batchomatic/create/DEBIAN
     mkdir -p /tmp/batchomatic/create/var/mobile/BatchInstall/SavedDebs
     mkdir -p /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs
-    cp /Library/batchomatic/directions /tmp/batchomatic/create/DEBIAN/postinst
+    cp /Library/Batchomatic/directions /tmp/batchomatic/create/DEBIAN/postinst
     echo "LOG: completed filesystem setup"
 }
 step3 () {
@@ -25,18 +25,20 @@ step3 () {
     echo "Maintainer: You" >> /tmp/batchomatic/create/DEBIAN/control
     echo "Architecture: iphoneos-arm" >> /tmp/batchomatic/create/DEBIAN/control
     echo "Section: Tweaks" >> /tmp/batchomatic/create/DEBIAN/control
-    echo "Description: Batch-install the .debs of your tweaks, offline! Created using Batchomatic v"$batchomaticVersion" and iOS "$iOSVersion"" >> /tmp/batchomatic/create/DEBIAN/control
+    echo "Description: Batch install the .debs of your tweaks, offline! Created using Batchomatic v"$batchomaticVersion" and iOS "$iOSVersion"" >> /tmp/batchomatic/create/DEBIAN/control
     echo "LOG: created control file"
 }
 step4 () {
     cp -r /var/mobile/Library/Preferences /tmp/batchomatic/create/var/mobile/BatchInstall
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.rpetrich.*.license
     rm -r /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.apple.*
+    rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/systemgroup.com.apple.*
     cp /var/mobile/Library/Caches/libactivator.plist /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/libactivator.exported.plist
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/.Global*
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.google*
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/group.com.apple*
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.saurik.Cydia.plist
+    rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/kNPProgressTrackerDomain.plist
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/nfcd.plist
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/TVRemoteConnectionService.plist
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/UITextInputContextIdentifiers.plist
@@ -58,7 +60,7 @@ step7 () {
     grep -o '^\S*' /tmp/batchomatic/noGsc.txt > /tmp/batchomatic/alltweaks.txt
     sort -u /tmp/batchomatic/alltweaks.txt > /tmp/batchomatic/tweaksSorted.txt
     sed -e :a -e '/./,$!d;/^\n*$/{$d;N;};/\n$/ba' /tmp/batchomatic/tweaksSorted.txt > /tmp/batchomatic/tweaksTrimmed.txt
-    diff --changed-group-format="%>" --unchanged-group-format="" /Library/batchomatic/ignoredtweaks.txt /tmp/batchomatic/tweaksTrimmed.txt > /tmp/batchomatic/tweaksWithoutIgnores.txt
+    diff --changed-group-format="%>" --unchanged-group-format="" /Library/Batchomatic/ignoredtweaks.txt /tmp/batchomatic/tweaksTrimmed.txt > /tmp/batchomatic/tweaksWithoutIgnores.txt
     sort -u /tmp/batchomatic/tweaksWithoutIgnores.txt > /tmp/batchomatic/tweaksReSorted.txt
     echo -n "`cat /tmp/batchomatic/tweaksReSorted.txt`" > /tmp/batchomatic/tweaks.txt
     echo "LOG: gathered tweaks"

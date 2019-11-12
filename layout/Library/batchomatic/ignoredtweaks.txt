@@ -2,11 +2,13 @@ apt
 apt-key
 apt-lib
 apt1.4
+apt7-key
 base
 bash
 berkeleydb
 bzip2
 ca-certificates
+com.bingner.snappy
 com.ex.libsubstitute
 com.ps.letmeblock
 com.saurik.substrate
@@ -82,5 +84,6 @@ trustinjector
 uikittools
 us.diatr.sileorespring
 us.diatr.sillyo
+wget
 xz
 zsh

@@ -1,5 +1,6 @@
 http://apt.bingner.com/
 https://apt.bingner.com/
+https://checkra.in/assets/mobilesubstrate/
 https://diatr.us/apt/
 https://diatr.us/sileodark/
 https://repo.chimera.sh/

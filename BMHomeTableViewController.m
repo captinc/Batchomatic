@@ -1,6 +1,6 @@
 #import "headers/BMHomeTableViewController.h"
 #import "headers/BMInstallTableViewController.h"
-#import "headers/batchomatic.h"
+#import "headers/Batchomatic.h"
 
 //the main "Batchomatic" screen where you choose what feature to use
 @implementation BMHomeTableViewController
@@ -15,7 +15,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self checkDeb];
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     bm.bm_BMHomeTableViewController = self;
     self.tableView = [self createTableView];
     
@@ -73,7 +73,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [tableView deselectRowAtIndexPath:indexPath animated:YES]; //this is also needed for that select-then-immediately-deselect animation
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     if (indexPath.row == 0) { [self prepareToCreate:1]; }
     else if (indexPath.row == 1) { [self prepareToCreate:2]; }
     else if (indexPath.row == 2) { [self presentInstallVC]; }
@@ -83,8 +83,8 @@
 }
 
 - (void)prepareToCreate:(int)type { //we need to have 2 methods to create the .deb because there was a bug where the UIAlertController wouldn't show up
-    //the 2 methods are this one and (void)createDeb:(int)type in batchomatic.xm
-    batchomatic *bm = [batchomatic sharedInstance];
+    //the 2 methods are this one and (void)createDeb:(int)type in Batchomatic.xm
+    Batchomatic *bm = [Batchomatic sharedInstance];
     if (type == 1) { bm.maxSteps = 1; }
     else { bm.maxSteps = 3; }
     NSString *motherMessage = [bm showProcessingDialog:@"Preparing...." includeStage:true startingStep:0 autoPresent:true];
@@ -92,7 +92,7 @@
 }
 
 - (void)presentInstallVC { //shows the Install options screen if your .deb is currently installed (BMInstallTableViewController)
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     if (bm.debIsInstalled) {
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[BMInstallTableViewController alloc] init]];
         [self presentViewController:nav animated:YES completion:nil];
@@ -106,7 +106,7 @@
 }
 
 - (void)checkDeb { //everytime the main "Batchomatic" screen enters the foreground, it checks if your .deb is installed and whether its online or offfline. determining this info takes about 1 second, therefore causing 1 second of lag whenever you press the "Install .deb" or "Proceed" buttons. this implementation with NSNotificationCenter & UIApplicationWillEnterForegroundNotification fixes that
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     bm.bm_currentBMController = self; //this variable is whatever Batchomatic view controller is currently on-screen
     if ([bm isDebInstalled]) { bm.debIsInstalled = true; }
     else { bm.debIsInstalled = false; }
@@ -116,7 +116,7 @@
 
 - (void)openHelpPage {
     NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : @NO};
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString: @"https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/"] options:options completionHandler:nil];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/"] options:options completionHandler:nil];
 }
 
 - (void)dismiss {

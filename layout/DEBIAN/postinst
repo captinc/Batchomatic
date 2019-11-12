@@ -1,12 +1,10 @@
 #!/bin/bash
 
-mkdir -p /var/mobile/BatchomaticDebs/UserSavedDebs 2>/dev/null
+mkdir -p /var/mobile/BatchomaticDebs/UserSavedDebs
 chmod -R 777 /var/mobile/BatchomaticDebs
 
 chmod +s /usr/bin/bmd
-rm /usr/bin/batchdeb 2>/dev/null
-
-chown root /Library/batchomatic/directions
-chmod 755 /Library/batchomatic/directions
+chown root /Library/Batchomatic/directions
+chmod 755 /Library/Batchomatic/directions
 
 exit 0

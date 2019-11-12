@@ -1,12 +1,12 @@
 #import "headers/BMHomeTableViewController.h"
 #import "headers/BMInstallTableViewController.h"
-#import "headers/batchomatic.h"
+#import "headers/Batchomatic.h"
 
 //the "Install" screen where you choose what to install
 @implementation BMInstallTableViewController
 - (void)viewDidLoad {
     [super viewDidLoad];
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     bm.bm_currentBMController = self;
     self.tableView = [self createTableView];
     
@@ -57,7 +57,7 @@
         cell.textLabel.textColor = [UIColor colorWithRed:0.204 green:0.459 blue:1.000 alpha:1.0];
     }
     else { //adds a UISWitch to all other rows
-        batchomatic *bm = [batchomatic sharedInstance];
+        Batchomatic *bm = [Batchomatic sharedInstance];
         UISwitch *toggle = [[UISwitch alloc] initWithFrame:CGRectZero];
         toggle.tag = indexPath.row;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
@@ -104,8 +104,8 @@
 }
 
 - (void)prepareToInstall { //determines what needs to be done based on what the user chose in the switches. //we need to have 2 methods to install the .deb because there was a bug where the UIAlertController wouldn't show up
-    //the 2 methods are this one and (void)installDeb in batchomatic.xm
-    batchomatic *bm = [batchomatic sharedInstance];
+    //the 2 methods are this one and (void)installDeb in Batchomatic.xm
+    Batchomatic *bm = [Batchomatic sharedInstance];
     bm.maxSteps = 0;
     if (bm.prefsSwitchStatus == true) { bm.maxSteps += 1; }
     if (bm.savedDebsSwitchStatus == true) { bm.maxSteps += 1; }
@@ -123,7 +123,7 @@
 
 - (void)dismiss {
     [self dismissViewControllerAnimated:YES completion:nil];
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     [bm.bm_BMHomeTableViewController checkDeb];
 }
 @end

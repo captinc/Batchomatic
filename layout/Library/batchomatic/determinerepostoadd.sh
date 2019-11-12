@@ -13,6 +13,9 @@ addUtilityRepos () {
         elif [ -f "$FILE3" ]; then
             echo "https://apt.bingner.com/" >> /tmp/batchomatic/wantedReposRaw.txt
         fi
+    elif [ `ls -a /etc/apt/preferences.d/ | grep checkra1n` ]; then
+        echo "https://apt.bingner.com/" >> /tmp/batchomatic/wantedReposRaw.txt
+        echo "https://checkra.in/assets/mobilesubstrate/" >> /tmp/batchomatic/wantedReposRaw.txt
     fi
 }
 
@@ -21,8 +24,8 @@ mkdir /tmp/batchomatic
 cp /var/mobile/BatchInstall/repos.txt /tmp/batchomatic/wantedReposRaw.txt
 
 if [ "$1" = 1 ]; then
-    cat /etc/apt/sources.list.d/cydia.list >> /tmp/batchomatic/reposRaw.txt || true
-    cat /etc/apt/cydiasources.d/cydia.list >> /tmp/batchomatic/reposRaw.txt || true
+    cat /etc/apt/sources.list.d/*.list >> /tmp/batchomatic/reposRaw.txt || true
+    cat /etc/apt/cydiasources.d/*.list >> /tmp/batchomatic/reposRaw.txt || true
 elif [ "$1" = 2 ]; then
     cat "/var/mobile/Library/Application Support/xyz.willy.Zebra/sources.list" >> /tmp/batchomatic/reposRaw.txt || true
     addUtilityRepos

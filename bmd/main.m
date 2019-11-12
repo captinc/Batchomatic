@@ -52,7 +52,7 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
             task = [[NSTask alloc] init];
             args = [[NSMutableArray alloc] init];
             [task setLaunchPath:@"/bin/bash"];
-            [args addObject:@"/Library/batchomatic/createoffline.sh"];
+            [args addObject:@"/Library/Batchomatic/createoffline.sh"];
             [args addObject:@"deb"];
             [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
         }
@@ -127,19 +127,19 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
     }
     else if (!strcmp(argv[1], "addrepos")) {
         [task setLaunchPath:@"/bin/bash"];
-        [args addObject:@"/Library/batchomatic/determinerepostoadd.sh"];
+        [args addObject:@"/Library/Batchomatic/determinerepostoadd.sh"];
         [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
     }
     else if (!strcmp(argv[1], "removeall")) {
         [task setLaunchPath:@"/bin/bash"];
-        [args addObject:@"/Library/batchomatic/removealltweaks.sh"];
+        [args addObject:@"/Library/Batchomatic/removealltweaks.sh"];
         [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
     }
     //---------------------------------------------------------------------------------------------------
     else if (!strcmp(argv[1], "online")) { //running each stage of creating an online deb
         if (!strcmp(argv[2], "all")) {
             [task setLaunchPath:@"/bin/bash"];
-            [args addObject:@"/Library/batchomatic/createonline.sh"];
+            [args addObject:@"/Library/Batchomatic/createonline.sh"];
             [args addObject:@"all"];
         }
         else {
@@ -157,7 +157,7 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
             int arg_int = arg;
             if (arg_int >= 1 && arg_int <= 10) {
                 [task setLaunchPath:@"/bin/bash"];
-                [args addObject:@"/Library/batchomatic/createonline.sh"];
+                [args addObject:@"/Library/Batchomatic/createonline.sh"];
                 [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
             }
             else {
@@ -169,7 +169,7 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
     else if (!strcmp(argv[1], "offline")) { //running each stage of creating an offline deb
         if (!strcmp(argv[2], "all")) {
             [task setLaunchPath:@"/bin/bash"];
-            [args addObject:@"/Library/batchomatic/createoffline.sh"];
+            [args addObject:@"/Library/Batchomatic/createoffline.sh"];
             [args addObject:@"all"];
         }
         else {
@@ -187,7 +187,7 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
             int arg_int = arg;
             if (arg_int >= 1 && arg_int <= 10) {
                 [task setLaunchPath:@"/bin/bash"];
-                [args addObject:@"/Library/batchomatic/createoffline.sh"];
+                [args addObject:@"/Library/Batchomatic/createoffline.sh"];
                 [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
                 if (arg_int == 8) {
                     [args addObject:[NSString stringWithFormat:@"%s", argv[3]]];

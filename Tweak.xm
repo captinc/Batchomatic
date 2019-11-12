@@ -1,6 +1,6 @@
 #import <headers/Tweak.h>
 #import <headers/BMHomeTableViewController.h>
-#import <headers/batchomatic.h>
+#import <headers/Batchomatic.h>
 extern int refreshesCompleted;
 
 //hooks for compatibility with Cydia
@@ -12,7 +12,7 @@ extern int refreshesCompleted;
 }
 %new
 - (void)startBatchomatic {
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     bm.packageManager = 1;
     bm.motherClass = self; //this variable is whatever view controller we are coming from in the package manager
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[BMHomeTableViewController alloc] init]];
@@ -21,7 +21,7 @@ extern int refreshesCompleted;
 %end
 
 %hook Cydia
-- (void)reloadData { //this method is called when adding repos is finished. Remember, this code continues the "Add repos" feature. After this method, code is continued in the (void)addingReposDidFinish method in batchomatic.xm
+- (void)reloadData { //this method is called when adding repos is finished. Remember, this code continues the "Add repos" feature. After this method, code is continued in the (void)addingReposDidFinish method in Batchomatic.xm
     %orig;
     if (refreshesCompleted == 1) {
         Cydia *cydiaDelegate = (Cydia *)[[UIApplication sharedApplication] delegate];
@@ -29,7 +29,7 @@ extern int refreshesCompleted;
         refreshesCompleted = 2;
     }
     else if (refreshesCompleted == 2) {
-        [[%c(batchomatic) sharedInstance] addingReposDidFinish:true]; //we are passing true/false for whether or not we should transition the existing processing dialog or make a whole new one
+        [[%c(Batchomatic) sharedInstance] addingReposDidFinish:true]; //we are passing true/false for whether or not we should transition the existing processing dialog or make a whole new one
     }
 }
 
@@ -53,7 +53,7 @@ extern int refreshesCompleted;
 }
 %new
 - (void)startBatchomatic {
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     bm.packageManager = 2;
     bm.motherClass = self;
     bm.zebra_ZBTabBarController = (ZBTabBarController *)self.tabBarController; //this saves the instance of ZBTabBarController for later use
@@ -73,7 +73,7 @@ extern int refreshesCompleted;
             refreshesCompleted++;
         }
         else if (refreshesCompleted == 2) {
-            [[%c(batchomatic) sharedInstance] addingReposDidFinish:false]; //Zebra displays a pop-up when adding repos, which dismisses my UIAlertController. so, we need to create a new UIAlertController after adding repos is finished by passing 'false' to this method
+            [[%c(Batchomatic) sharedInstance] addingReposDidFinish:false]; //Zebra displays a pop-up when adding repos, which dismisses my UIAlertController. so, we need to create a new UIAlertController after adding repos is finished by passing 'false' to this method
         }
     }
 }
@@ -94,7 +94,7 @@ extern int refreshesCompleted;
 }
 %new
 - (void)startBatchomatic {
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     bm.packageManager = 3;
     bm.motherClass = self;
     UINavigationController *ctrl = self.tabBarController.viewControllers[2];
@@ -107,7 +107,7 @@ extern int refreshesCompleted;
 %hook UIActivityIndicatorView //Sileo calls this method when it finishes adding repos (Sileo is slightly different than other package managers)
 - (void)stopAnimating {
     %orig;
-    batchomatic *bm = [%c(batchomatic) sharedInstance];
+    Batchomatic *bm = [%c(Batchomatic) sharedInstance];
     if (refreshesCompleted != 0 && bm.packageManager == 3 && [NSStringFromClass(self.superview.class) length] == 0) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ //dispatch_after is necessary because Sileo takes a few seconds to update what tweaks are in the queue
             [bm addingReposDidFinish:true];
@@ -126,7 +126,7 @@ extern int refreshesCompleted;
 }
 %new
 - (void)startBatchomatic {
-    batchomatic *bm = [batchomatic sharedInstance];
+    Batchomatic *bm = [Batchomatic sharedInstance];
     bm.packageManager = 4;
     bm.motherClass = self;
     bm.installer_SearchViewController = self;
@@ -141,7 +141,7 @@ extern int refreshesCompleted;
 - (void)viewWillDisappear:(bool)animated { //Installer calls this method when it finishes adding repos
     %orig;
     if (refreshesCompleted != 0) {
-        [[%c(batchomatic) sharedInstance] addingReposDidFinish:false];
+        [[%c(Batchomatic) sharedInstance] addingReposDidFinish:false];
     }
 }
 %end
@@ -149,7 +149,7 @@ extern int refreshesCompleted;
 %hook ATRPackages
 - (id)init {
     %orig;
-    batchomatic *bm = [%c(batchomatic) sharedInstance];
+    Batchomatic *bm = [%c(Batchomatic) sharedInstance];
     bm.installer_ATRPackages = self;
     return self;
 }
