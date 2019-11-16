@@ -1,4 +1,4 @@
-//Batchomatic v4.1 - Created by /u/CaptInc37
+//Batchomatic v4.1.1 - Created by /u/CaptInc37
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
 #import <headers/Batchomatic.h>
 #import <headers/NSTask.h>
@@ -310,7 +310,7 @@ int refreshesCompleted = 0;
     
     else if (self.packageManager == 2) { //Zebra
         ZBDatabaseManager *zebraDatabase = [%c(ZBDatabaseManager) sharedInstance];
-        ZBQueue *zebraQueue = [%c(ZBQueue) sharedInstance];
+        ZBQueue *zebraQueue = [%c(ZBQueue) sharedQueue];
         ZBQueueType zebraInstall = ZBQueueTypeInstall;
         
         while (!feof(listOfTweaksFile)) {
@@ -327,7 +327,7 @@ int refreshesCompleted = 0;
             }
         }
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{ //dispatching code after 1 second is necessary because Zebra lags when you open a queue with a ton of packages. This way, the user experiences less lag
-            [self showUnfindableTweaks:unfindableTweaks transition:shouldTransition thenInClass:self.zebra_ZBTabBarController runMethod:@selector(openQueueBar:)];
+            [self showUnfindableTweaks:unfindableTweaks transition:shouldTransition thenInClass:self.zebra_ZBTabBarController runMethod:@selector(openQueue:)];
         });
     }
     
@@ -471,7 +471,7 @@ int refreshesCompleted = 0;
     
     else if (self.packageManager == 2) {
         ZBDatabaseManager *zebraDatabase = [%c(ZBDatabaseManager) sharedInstance];
-        ZBQueue *zebraQueue = [%c(ZBQueue) sharedInstance];
+        ZBQueue *zebraQueue = [%c(ZBQueue) sharedQueue];
         ZBQueueType zebraRemove = ZBQueueTypeRemove;
         while (!feof(removeAllTweaksFile)) {
             NSString *thePackageIdentifer = [self readEachLineOfFile:removeAllTweaksFile];
@@ -482,7 +482,7 @@ int refreshesCompleted = 0;
         }
         [self.processingDialog dismissViewControllerAnimated:YES completion:^{
             [self.bm_BMHomeTableViewController dismissViewControllerAnimated:YES completion:^{
-                [self.zebra_ZBTabBarController openQueueBar:YES];
+                [self.zebra_ZBTabBarController openQueue:YES];
             }];
         }];
     }

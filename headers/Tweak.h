@@ -13,10 +13,6 @@
 - (void)queue;
 @end
 
-@interface Database : NSObject
-+ (Database *)sharedInstance;
-@end
-
 @interface Package : NSObject
 - (NSString *)installed;
 - (BOOL)uninstalled;
@@ -28,22 +24,22 @@
 - (Package *)packageWithName:(NSString *)packageIdentifier;
 @end
 
+@interface Database : NSObject
++ (Database *)sharedInstance;
+@end
+
 //-----------------------------------------------------------------
 //headers for compatibility with Zebra
 @interface ZBSearchViewController : UITableViewController
 - (void)viewDidLoad;
 @end
 
-@interface ZBTabBarController : UITabBarController
-- (void)viewDidAppear:(BOOL)animated;
-- (void)openQueueBar:(BOOL)openPopup;
-@end
-
 @interface ZBRepoListTableViewController : UITableViewController
 - (void)didAddReposWithText:(NSString *)text;
 @end
 
-@interface ZBPackage : NSObject
+@interface ZBRefreshViewController : UIViewController
+- (void)viewWillDisappear:(BOOL)animated;
 @end
 
 typedef enum {
@@ -51,9 +47,16 @@ typedef enum {
     ZBQueueTypeRemove       = 1 << 1,
 } ZBQueueType;
 
+@interface ZBPackage : NSObject
+@end
+
 @interface ZBQueue : NSObject
-+ (id)sharedInstance;
++ (id)sharedQueue;
 - (void)addPackage:(ZBPackage *)package toQueue:(ZBQueueType)queue;
+@end
+
+@interface ZBTabBarController : UITabBarController
+- (void)openQueue:(BOOL)openPopup;
 @end
 
 @interface ZBDatabaseManager : NSObject
@@ -68,24 +71,13 @@ typedef enum {
 - (void)viewDidLoad;
 @end
 
-@interface TabBarController : UITabBarController
-+ (id)singleton;
-- (void)presentPopupController;
-@end
-
-@interface _TtC5Sileo21SourcesViewController : UITableViewController
-- (void)refreshSources:(UIRefreshControl *)refreshController;
-@end
-
 @interface _TtC5Sileo11RepoManager : NSObject
 + (id)shared;
 - (void)addReposWith:(NSArray *)arrayOfNSURL;
 @end
 
-@interface _TtC5Sileo18PackageListManager : NSObject
-+ (id)shared;
-- (Package *)newestPackageWithIdentifier:(NSString *)packageIdentifier;
-- (Package *)installedPackageWithIdentifier:(NSString *)packageIdentifier;
+@interface _TtC5Sileo21SourcesViewController : UITableViewController
+- (void)refreshSources:(UIRefreshControl *)refreshController;
 @end
 
 @interface _TtC5Sileo15DownloadManager : NSObject
@@ -96,6 +88,17 @@ typedef enum {
 - (void)reloadDataWithRecheckPackages:(bool)recheck;
 @end
 
+@interface TabBarController : UITabBarController
++ (id)singleton;
+- (void)presentPopupController;
+@end
+
+@interface _TtC5Sileo18PackageListManager : NSObject
++ (id)shared;
+- (Package *)newestPackageWithIdentifier:(NSString *)packageIdentifier;
+- (Package *)installedPackageWithIdentifier:(NSString *)packageIdentifier;
+@end
+
 //-----------------------------------------------------------------
 //headers for compatibility with Installer
 @interface SearchViewController : UIViewController
@@ -104,12 +107,12 @@ typedef enum {
 - (void)proceedQueuedPackages;
 @end
 
-@interface TasksViewController : UIViewController
-- (void)viewWillDisappear:(bool)animated;
-@end
-
 @interface ManageViewController : UIViewController
 - (void)addSourceWithString:(NSString *)repoURL withHttpApproval:(bool)approval;
+@end
+
+@interface TasksViewController : UIViewController
+- (void)viewWillDisappear:(BOOL)animated;
 @end
 
 @interface ATRPackage : NSObject

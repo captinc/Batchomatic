@@ -1,6 +1,6 @@
 Package: com.captinc.batchomatic
 Name: Batchomatic
-Version: 4.1
+Version: 4.1.1
 Author: Capt Inc <teamcaptinc@gmail.com>
 Maintainer: Capt Inc <teamcaptinc@gmail.com>
 Depends: firmware (>=11.0), mobilesubstrate, coreutils

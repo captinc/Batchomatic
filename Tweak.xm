@@ -65,16 +65,10 @@ extern int refreshesCompleted;
 }
 %end
 
-%hook ZBTabBarController
-- (void)viewDidAppear:(BOOL)animated { //Zebra calls this method when it finishes adding repos
-    %orig;
+%hook ZBRefreshViewController
+- (void)viewWillDisappear:(BOOL)animated { //Zebra calls this method when it finishes adding repos
     if (refreshesCompleted != 0) {
-        if (refreshesCompleted == 1) { //but because this method is also called when we dismiss BMHomeTableViewController, we have to wait until the second time its called
-            refreshesCompleted++;
-        }
-        else if (refreshesCompleted == 2) {
-            [[%c(Batchomatic) sharedInstance] addingReposDidFinish:false]; //Zebra displays a pop-up when adding repos, which dismisses my UIAlertController. so, we need to create a new UIAlertController after adding repos is finished by passing 'false' to this method
-        }
+        [[%c(Batchomatic) sharedInstance] addingReposDidFinish:false]; //Zebra displays a pop-up when adding repos, which dismisses my UIAlertController. so, we need to create a new UIAlertController after adding repos is finished by passing 'false' to this method
     }
 }
 %end
@@ -138,7 +132,7 @@ extern int refreshesCompleted;
 %end
 
 %hook TasksViewController
-- (void)viewWillDisappear:(bool)animated { //Installer calls this method when it finishes adding repos
+- (void)viewWillDisappear:(BOOL)animated { //Installer calls this method when it finishes adding repos
     %orig;
     if (refreshesCompleted != 0) {
         [[%c(Batchomatic) sharedInstance] addingReposDidFinish:false];
