@@ -1,8 +1,11 @@
 #!/bin/bash
 
 mkdir -p /var/mobile/BatchomaticDebs/UserSavedDebs
+chown mobile /var/mobile/BatchomaticDebs
+chown mobile /var/mobile/BatchomaticDebs/UserSavedDebs
 chmod -R 777 /var/mobile/BatchomaticDebs
 
+chown root:wheel /usr/bin/bmd
 chmod +s /usr/bin/bmd
 chown root /Library/Batchomatic/directions
 chmod 755 /Library/Batchomatic/directions

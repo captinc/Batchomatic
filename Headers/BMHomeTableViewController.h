@@ -1,21 +1,27 @@
-//headers for my tweak's main screen UI
 @interface BMHomeTableViewController : UITableViewController
-- (id)init;
+- (instancetype)init;
 - (void)viewDidLoad;
+- (void)viewWillAppear:(BOOL)animated;
 
-- (UITableView *)createTableView;
+- (void)createNavBar;
+- (void)createTableView;
+- (void)addVersionNumberFooter;
+
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section;
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section;
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section;
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 
-- (void)prepareToCreate:(int)type;
-- (void)presentInstallVC;
-- (void)checkDeb;
-- (void)openHelpPage;
+- (void)didTapEitherCreateDebButton:(int)type;
+- (void)didTapInstallDebButton;
+- (void)didTapEitherRemoveAllButton:(int)type;
+- (void)didTapRespringButton;
+- (void)didTapDismissButton;
+- (void)didTapHelpButton;
 
-- (void)dismiss;
+- (void)checkDeb;
 - (void)dealloc;
 @end

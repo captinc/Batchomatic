@@ -1,26 +1,32 @@
-#import "../headers/NSTask.h"
 #import <stdio.h>
 #import <string.h>
 #import <dlfcn.h>
+#import "../Headers/NSTask.h"
 #define FLAG_PLATFORMIZE (1 << 1)
 
-void fixSetuidForChimera() { //this method needs to be run when using Chimera or Electra because they behave slightly differently than unc0ver
+void fixSetuidForChimera() { //On Chimera, you have to do this fancy stuff to make yourself root (cannot simply do setuid() like unc0ver/checkra1n)
     void *handle = dlopen("/usr/lib/libjailbreak.dylib", RTLD_LAZY);
-    if (!handle)
+    if (!handle) {
         return;
+    }
+    
     dlerror();
     typedef void (*fix_entitle_prt_t)(pid_t pid, uint32_t what);
     fix_entitle_prt_t enetitle_ptr = (fix_entitle_prt_t)dlsym(handle, "jb_oneshot_entitle_now");
     const char *dlsym_error = dlerror();
-    if (dlsym_error)
+    if (dlsym_error) {
         return;
+    }
     enetitle_ptr(getpid(), FLAG_PLATFORMIZE);
+    
     dlerror();
     typedef void (*fix_setuid_prt_t)(pid_t pid);
     fix_setuid_prt_t setuid_ptr = (fix_setuid_prt_t)dlsym(handle,"jb_oneshot_fix_setuid_now");
     dlsym_error = dlerror();
-    if (dlsym_error)
+    if (dlsym_error) {
         return;
+    }
+    
     setuid_ptr(getpid());
     setuid(0);
     setgid(0);
@@ -28,9 +34,9 @@ void fixSetuidForChimera() { //this method needs to be run when using Chimera or
     setgid(0);
 }
 
-int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one of the commands below and then runs it as root. Hardcoding commands instead of allowing the user to specify a command in the arguments is a safer and better practice
+int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the commands below and run it as root. Hardcoding commands instead of passing a command in the arguments is a safer and better practice
     if (argc < 2) {
-        printf("Error: you did not specify a command to run\n");
+        printf("Error: you did not specify an option to run\n");
         return 1;
     }
     
@@ -38,10 +44,10 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
     if (getuid() != 0) {
         fixSetuidForChimera();
     }
+    
     NSTask *task = [[NSTask alloc] init];
     NSMutableArray *args = [[NSMutableArray alloc] init];
-    
-    if (!strcmp(argv[1], "deb")) { //the feature for creating a .deb of a single tweak
+    if (!strcmp(argv[1], "deb")) { //creating a .deb of a single tweak
         if (argc > 2) {
             [task setLaunchPath:@"/usr/bin/bmd"];
             [args addObject:@"rmtemp"];
@@ -61,8 +67,8 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
             return 1;
         }
     }
-    //---------------------------------------------------------------------------------------------------
-    else if (!strcmp(argv[1], "rmtemp")) {
+    //--------------------------------------------------------------------------------------------------------------------------
+    else if (!strcmp(argv[1], "rmtemp")) { //misc utilities
         [task setLaunchPath:@"/bin/rm"];
         [args addObject:@"-r"];
         [args addObject:@"/tmp/batchomatic"];
@@ -79,8 +85,8 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
         [args addObject:@"777"];
         [args addObject:@"/var/mobile/BatchInstall/OfflineDebs"];
     }
-    //---------------------------------------------------------------------------------------------------
-    else if (!strcmp(argv[1], "installprefs")) {
+    //--------------------------------------------------------------------------------------------------------------------------
+    else if (!strcmp(argv[1], "installprefs")) { //installing the .deb
         [task setLaunchPath:@"/bin/cp"];
         [args addObject:@"-r"];
         [args addObject:@"/var/mobile/BatchInstall/Preferences/*"];
@@ -130,12 +136,12 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
         [args addObject:@"/Library/Batchomatic/determinerepostoadd.sh"];
         [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
     }
-    else if (!strcmp(argv[1], "removeall")) {
+    else if (!strcmp(argv[1], "removealltweaks")) {
         [task setLaunchPath:@"/bin/bash"];
         [args addObject:@"/Library/Batchomatic/removealltweaks.sh"];
         [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
     }
-    //---------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------------------------
     else if (!strcmp(argv[1], "online")) { //running each stage of creating an online deb
         if (!strcmp(argv[2], "all")) {
             [task setLaunchPath:@"/bin/bash"];
@@ -143,18 +149,17 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
             [args addObject:@"all"];
         }
         else {
-            char* p;
+            char *p; //convert a string from argv[] to an int to verify that the user chose a valid step
             errno = 0;
             long arg = strtol(argv[2], &p, 10);
             if (*p != '\0' || errno != 0) {
-                printf("Error converting string to int\n");
                 return 1;
             }
             if (arg < INT_MIN || arg > INT_MAX) {
-                printf("Error converting string to int\n");
                 return 1;
             }
             int arg_int = arg;
+            
             if (arg_int >= 1 && arg_int <= 10) {
                 [task setLaunchPath:@"/bin/bash"];
                 [args addObject:@"/Library/Batchomatic/createonline.sh"];
@@ -166,6 +171,7 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
             }
         }
     }
+    //--------------------------------------------------------------------------------------------------------------------------
     else if (!strcmp(argv[1], "offline")) { //running each stage of creating an offline deb
         if (!strcmp(argv[2], "all")) {
             [task setLaunchPath:@"/bin/bash"];
@@ -173,18 +179,17 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
             [args addObject:@"all"];
         }
         else {
-            char* p;
+            char *p;
             errno = 0;
             long arg = strtol(argv[2], &p, 10);
             if (*p != '\0' || errno != 0) {
-                printf("Error converting string to int\n");
                 return 1;
             }
             if (arg < INT_MIN || arg > INT_MAX) {
-                printf("Error converting string to int\n");
                 return 1;
             }
             int arg_int = arg;
+            
             if (arg_int >= 1 && arg_int <= 10) {
                 [task setLaunchPath:@"/bin/bash"];
                 [args addObject:@"/Library/Batchomatic/createoffline.sh"];
@@ -201,9 +206,10 @@ int main(int argc, char *argv[], char *envp[]) { //allows the user to pick one o
         }
     }
     else {
-        printf("Error: you did not pick a valid option\n");
+        printf("Error: you did not specify a valid option\n");
         return 1;
     }
+    
     [task setArguments:args];
     [task launch];
     [task waitUntilExit];

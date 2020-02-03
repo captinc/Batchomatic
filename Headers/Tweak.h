@@ -1,6 +1,7 @@
-//headers for compatibility with Cydia
+//Cydia
 @interface SearchController : UIViewController
 - (void)viewDidLoad;
+- (void)startBatchomatic;
 @end
 
 @interface Cydia : UIApplication
@@ -25,21 +26,36 @@
 @end
 
 @interface Database : NSObject
-+ (Database *)sharedInstance;
++ (instancetype)sharedInstance;
+- (NSMutableArray *)sources;
 @end
 
-//-----------------------------------------------------------------
-//headers for compatibility with Zebra
+@interface Source : NSObject
+- (NSMutableString *)rooturi;
+- (BOOL)remove;
+@end
+
+//--------------------------------------------------------------------------------------------------------------------------
+//Zebra
 @interface ZBSearchViewController : UITableViewController
 - (void)viewDidLoad;
+- (void)startBatchomatic;
 @end
 
-@interface ZBRepoListTableViewController : UITableViewController
+@interface ZBRefreshableTableViewController : UITableViewController
+- (void)refreshSources:(id)sender;
+@end
+
+@interface ZBRepoListTableViewController : ZBRefreshableTableViewController
 - (void)didAddReposWithText:(NSString *)text;
+- (void)refreshTable;
 @end
 
 @interface ZBRefreshViewController : UIViewController
-- (void)viewWillDisappear:(BOOL)animated;
+- (void)viewDidDisappear:(BOOL)animated;
+@end
+
+@interface ZBPackage : NSObject
 @end
 
 typedef enum {
@@ -47,68 +63,94 @@ typedef enum {
     ZBQueueTypeRemove       = 1 << 1,
 } ZBQueueType;
 
-@interface ZBPackage : NSObject
-@end
-
 @interface ZBQueue : NSObject
-+ (id)sharedQueue;
++ (instancetype)sharedQueue;
 - (void)addPackage:(ZBPackage *)package toQueue:(ZBQueueType)queue;
 @end
 
 @interface ZBTabBarController : UITabBarController
 - (void)openQueue:(BOOL)openPopup;
+- (void)setRepoRefreshIndicatorVisible:(BOOL)visible;
+@end
+
+@interface ZBRepo : NSObject
+- (NSMutableString *)shortURL;
+@end
+
+@interface ZBRepoManager : NSObject
++ (instancetype)sharedInstance;
+- (void)deleteSource:(ZBRepo *)repo;
 @end
 
 @interface ZBDatabaseManager : NSObject
-+ (id)sharedInstance;
++ (instancetype)sharedInstance;
 - (ZBPackage *)topVersionForPackageID:(NSString *)packageIdentifier;
 - (BOOL)packageIDIsInstalled:(NSString *)packageIdentifier version:(NSString *)version;
+- (NSMutableArray *)repos;
 @end
 
-//-----------------------------------------------------------------
-//headers for compatibility with Sileo
+@interface ZBDevice : NSObject
++ (BOOL)darkModeEnabled;
+@end
+
+//--------------------------------------------------------------------------------------------------------------------------
+//Sileo
 @interface _TtC5Sileo25PackageListViewController : UIViewController
 - (void)viewDidLoad;
+- (void)startBatchomatic;
+@end
+
+@interface _TtC5Sileo4Repo : NSObject
+- (NSString *)repoURL;
 @end
 
 @interface _TtC5Sileo11RepoManager : NSObject
-+ (id)shared;
++ (instancetype)shared;
+- (NSArray *)repoList;
 - (void)addReposWith:(NSArray *)arrayOfNSURL;
+- (void)remove:(_TtC5Sileo4Repo *)repo;
 @end
 
 @interface _TtC5Sileo21SourcesViewController : UITableViewController
 - (void)refreshSources:(UIRefreshControl *)refreshController;
 @end
 
+@interface _TtC5Sileo7Package : NSObject
+@end
+
+@interface _TtC5Sileo18PackageListManager : NSObject
++ (instancetype)shared;
+- (_TtC5Sileo7Package *)newestPackageWithIdentifier:(NSString *)packageIdentifier;
+- (_TtC5Sileo7Package *)installedPackageWithIdentifier:(NSString *)packageIdentifier;
+@end
+
 @interface _TtC5Sileo15DownloadManager : NSObject
 @property (nonatomic, copy) NSArray *errors;
 @property (nonatomic, copy) NSArray *installations;
-+ (id)shared;
-- (void)addWithPackage:(Package *)thePackage queue:(int)typeOfQueue;
++ (instancetype)shared;
+- (void)addWithPackage:(_TtC5Sileo7Package *)thePackage queue:(int)typeOfQueue;
 - (void)reloadDataWithRecheckPackages:(bool)recheck;
 @end
 
 @interface TabBarController : UITabBarController
-+ (id)singleton;
++ (instancetype)singleton;
 - (void)presentPopupController;
 @end
 
-@interface _TtC5Sileo18PackageListManager : NSObject
-+ (id)shared;
-- (Package *)newestPackageWithIdentifier:(NSString *)packageIdentifier;
-- (Package *)installedPackageWithIdentifier:(NSString *)packageIdentifier;
-@end
-
-//-----------------------------------------------------------------
-//headers for compatibility with Installer
+//--------------------------------------------------------------------------------------------------------------------------
+//Installer
 @interface SearchViewController : UIViewController
 - (void)viewDidLoad;
-- (void)showTaskView;
-- (void)proceedQueuedPackages;
+- (void)startBatchomatic;
 @end
 
 @interface ManageViewController : UIViewController
 - (void)addSourceWithString:(NSString *)repoURL withHttpApproval:(bool)approval;
+@end
+
+@interface ATTabBarController : UITabBarController
+- (void)presentTasks;
+- (void)presentQueue;
 @end
 
 @interface TasksViewController : UIViewController
@@ -119,8 +161,18 @@ typedef enum {
 @end
 
 @interface ATRPackages : NSObject
-- (id)init;
 - (ATRPackage *)packageWithIdentifier:(NSString *)packageIdentifier;
 - (bool)packageIsInstalled:(NSString *)packageIdentifier;
-- (void)setPackage:(NSString *)packageIdentifier inTheQueue:(bool)queue;
+- (void)setPackage:(NSString *)packageIdentifier inTheQueue:(BOOL)queue versionToQueue:(NSString *)version operation:(NSUInteger)operation;
+@end
+
+@interface ATRSources : NSObject
+- (NSMutableArray *)arrayOfConfiguredSources;
+- (BOOL)removeSourceWithLocation:(NSString *)url;
+@end
+
+@interface ATRPackageManager
++ (instancetype)sharedPackageManager;
+- (ATRSources *)sources;
+- (ATRPackages *)packages;
 @end

@@ -2,8 +2,8 @@
 
 echo ""
 echo "To finish installing your .deb:"
-echo "1. Install Batchomatic from BigBoss"
+echo "1. Install Batchomatic from BigBoss or https://captinc.github.io/"
 echo "2. Go to the Search tab in your package manager"
-echo "3. Tap Batchomatic at the top"
+echo "3. Tap the Batchomatic icon at the top left (the steering wheel)"
 echo "4. Tap 'Install .deb'"
 exit 0

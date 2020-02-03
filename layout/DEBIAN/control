@@ -1,9 +1,10 @@
 Package: com.captinc.batchomatic
 Name: Batchomatic
-Version: 4.1.1
+Version: 4.2
+Depends: firmware (>=11.0), mobilesubstrate, coreutils
 Author: Capt Inc <teamcaptinc@gmail.com>
 Maintainer: Capt Inc <teamcaptinc@gmail.com>
-Depends: firmware (>=11.0), mobilesubstrate, coreutils
-Architecture: iphoneos-arm
 Section: Tweaks
+Architecture: iphoneos-arm
 Description: Batch install your tweaks, repos, saved .debs, tweak preferences, and hosts file!
+Depiction: https://captinc.github.io/depictions/batchomatic/batchomatic.html

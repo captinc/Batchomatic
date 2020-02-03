@@ -5,15 +5,17 @@ step1 () {
     mkdir /tmp/batchomatic
     echo "`date +"%Y.%m.%d-%H.%M.%S"`" >> /tmp/batchomatic/timestampWithNewline.txt
     echo -n "`cat /tmp/batchomatic/timestampWithNewline.txt`" > /tmp/batchomatic/timestamp.txt
-    echo "LOG: completed initial setup"
+    echo "LOG: Completed initial setup"
 }
+
 step2 () {
     mkdir -p /tmp/batchomatic/create/DEBIAN
     mkdir -p /tmp/batchomatic/create/var/mobile/BatchInstall/SavedDebs
     mkdir -p /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs
     cp /Library/Batchomatic/directions /tmp/batchomatic/create/DEBIAN/postinst
-    echo "LOG: completed filesystem setup"
+    echo "LOG: Completed filesystem setup"
 }
+
 step3 () {
     timestamp="`cat /tmp/batchomatic/timestamp.txt`"
     batchomaticVersion=`dpkg-query --showformat='${Version}\n' --show com.captinc.batchomatic`
@@ -25,9 +27,10 @@ step3 () {
     echo "Maintainer: You" >> /tmp/batchomatic/create/DEBIAN/control
     echo "Architecture: iphoneos-arm" >> /tmp/batchomatic/create/DEBIAN/control
     echo "Section: Tweaks" >> /tmp/batchomatic/create/DEBIAN/control
-    echo "Description: Batch install the .debs of your tweaks, offline! Created using Batchomatic v"$batchomaticVersion" and iOS "$iOSVersion"" >> /tmp/batchomatic/create/DEBIAN/control
-    echo "LOG: created control file"
+    echo "Description: Batch install .debs of your tweaks, offline! Created using Batchomatic v"$batchomaticVersion" and iOS "$iOSVersion"" >> /tmp/batchomatic/create/DEBIAN/control
+    echo "LOG: Created control file"
 }
+
 step4 () {
     cp -r /var/mobile/Library/Preferences /tmp/batchomatic/create/var/mobile/BatchInstall
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/com.rpetrich.*.license
@@ -43,16 +46,19 @@ step4 () {
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/TVRemoteConnectionService.plist
     rm /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences/UITextInputContextIdentifiers.plist
     find /tmp/batchomatic/create/var/mobile/BatchInstall/Preferences -maxdepth 1 -name "*groups.com.apple*" -delete
-    echo "LOG: gathered tweak preferences"
+    echo "LOG: Gathered tweak preferences"
 }
+
 step5 () {
     cp /etc/hosts /tmp/batchomatic/create/var/mobile/BatchInstall
-    echo "LOG: gathered hosts file"
+    echo "LOG: Gathered hosts file"
 }
+
 step6 () {
     cp /var/mobile/BatchomaticDebs/UserSavedDebs/* /tmp/batchomatic/create/var/mobile/BatchInstall/SavedDebs
-    echo "LOG: gathered saved debs"
+    echo "LOG: Gathered saved debs"
 }
+
 step7 () {
     dpkg --get-selections > /tmp/batchomatic/rawtweaks.txt
     grep -v deinstall /tmp/batchomatic/rawtweaks.txt > /tmp/batchomatic/noDeinstalls.txt
@@ -63,8 +69,9 @@ step7 () {
     diff --changed-group-format="%>" --unchanged-group-format="" /Library/Batchomatic/ignoredtweaks.txt /tmp/batchomatic/tweaksTrimmed.txt > /tmp/batchomatic/tweaksWithoutIgnores.txt
     sort -u /tmp/batchomatic/tweaksWithoutIgnores.txt > /tmp/batchomatic/tweaksReSorted.txt
     echo -n "`cat /tmp/batchomatic/tweaksReSorted.txt`" > /tmp/batchomatic/tweaks.txt
-    echo "LOG: gathered tweaks"
+    echo "LOG: Gathered tweaks"
 }
+
 step8() {
     eachTweak="$1"
     rm -r /tmp/batchomatic/builddeb
@@ -110,14 +117,16 @@ step8() {
 
     find /tmp/batchomatic/builddeb -name ".DS_Store" -type f -delete
     dpkg -b /tmp/batchomatic/builddeb /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs
-    echo "LOG: created deb of one tweak"
+    echo "LOG: Created deb of one tweak"
 }
+
 step9 () {
     timestamp="`cat /tmp/batchomatic/timestamp.txt`"
     find /tmp/batchomatic/create -name ".DS_Store" -type f -delete
-    echo "LOG: building final deb"
+    echo "LOG: Building final deb"
     dpkg -b /tmp/batchomatic/create /tmp/batchomatic/batchinstall-offline-"$timestamp".deb
 }
+
 step10 () {
     timestamp="`cat /tmp/batchomatic/timestamp.txt`"
     if ! dpkg -x /tmp/batchomatic/batchinstall-offline-"$timestamp".deb /tmp/batchomatic/verify; then
@@ -126,7 +135,7 @@ step10 () {
     else
         mv /tmp/batchomatic/batchinstall-offline-"$timestamp".deb /var/mobile/BatchomaticDebs
         echo "batchinstall-offline-"$timestamp".deb" > /tmp/batchomatic/nameOfDeb.txt
-        echo "LOG: complete"
+        echo "LOG: Done!"
     fi
 }
 
@@ -174,5 +183,5 @@ elif [ "$1" = deb ]; then
     step8 "$2"
     mv /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs/*.deb /var/mobile/BatchomaticDebs
     rm -r /tmp/batchomatic
-    echo "LOG: your final .deb is at /var/mobile/BatchomaticDebs"
+    echo "LOG: Done! The .deb is at /var/mobile/BatchomaticDebs"
 fi

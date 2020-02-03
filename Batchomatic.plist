@@ -1,10 +1,10 @@
 {
 	Filter = {
 		Bundles = (
-			"me.apptapp.installer",
-			"xyz.willy.Zebra",
 			"com.saurik.Cydia",
+			"xyz.willy.Zebra",
 			"org.coolstar.SileoStore",
+			"me.apptapp.installer",
 		);
 	};
 }

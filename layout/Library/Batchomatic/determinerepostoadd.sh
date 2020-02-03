@@ -42,6 +42,7 @@ sed 's:/\?$:/:g' /tmp/batchomatic/reposExtracted.txt >> /tmp/batchomatic/reposWi
 sed 's#https://repounclutter.coolstar.org/#http://apt.thebigboss.org/repofiles/cydia/#g' /tmp/batchomatic/reposWithSlash.txt > /tmp/batchomatic/reposRepoUnclutterConverted.txt
 sed 's#http://apt.bingner.com/#https://apt.bingner.com/#g' /tmp/batchomatic/reposRepoUnclutterConverted.txt > /tmp/batchomatic/reposBingnerConverted.txt
 sort -u /tmp/batchomatic/reposBingnerConverted.txt > /tmp/batchomatic/currentlyaddedrepos.txt
+
 diff --changed-group-format="%>" --unchanged-group-format="" /tmp/batchomatic/currentlyaddedrepos.txt /tmp/batchomatic/wantedReposRaw.txt > /tmp/batchomatic/reposToAddWithoutIgnores.txt
 if [ "$1" = 3 ]; then
     sed 's#http://apt.thebigboss.org/repofiles/cydia/#https://repounclutter.coolstar.org/#g' /tmp/batchomatic/reposToAddWithoutIgnores.txt > /tmp/batchomatic/reposRepoUnclutterConverted.txt
@@ -52,6 +53,7 @@ else
 fi
 sort -u /tmp/batchomatic/reposDefaultSourcesHandled.txt > /tmp/batchomatic/reposToAddSorted.txt
 echo -n "`cat /tmp/batchomatic/reposToAddSorted.txt`" > /tmp/batchomatic/reposToAdd.txt
+
 if [ ! -s /tmp/batchomatic/reposToAdd.txt ]; then
     rm /tmp/batchomatic/reposToAdd.txt
 fi

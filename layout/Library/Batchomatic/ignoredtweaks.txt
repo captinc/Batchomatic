@@ -46,6 +46,7 @@ gnutls
 grep
 gzip
 jailbreak-resources
+launchctl
 ldid
 libapt
 libapt-pkg5.0
@@ -66,7 +67,6 @@ ncurses
 ncurses5-libs
 nettle
 npth
-openssh
 org.coolstar.sileo
 org.coolstar.tweakinject
 org.thebigboss.repo.icons
