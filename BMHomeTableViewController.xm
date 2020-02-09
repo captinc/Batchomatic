@@ -66,7 +66,7 @@
 - (void)addVersionNumberFooter { //Add the version number as footer of the UITableView
     UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 28)];
     UILabel *label = [[UILabel alloc] initWithFrame:footer.frame];
-    label.text = @"v4.2";
+    label.text = @"v4.2.1";
     label.textAlignment = NSTextAlignmentCenter;
     if ([Batchomatic sharedInstance].packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) { //Zebra has its own dark mode that doesn't follow the iOS 13 dark mode, so we need to manually set the text color when in Zebra's dark mode
         label.textColor = [UIColor whiteColor];
@@ -240,7 +240,7 @@
 }
 
 - (void)didTapHelpButton {
-    NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : @NO};
+    NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly:@NO};
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/"] options:options completionHandler:nil];
 }
 

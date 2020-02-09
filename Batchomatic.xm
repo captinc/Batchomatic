@@ -70,7 +70,7 @@ int refreshesCompleted = 0;
         [self transitionProgressMessage:@"Error: creation of your .deb failed\nTry deleting /var/mobile/Library/Preferences/com.rpetrich.pictureinpicture.license and /var/mobile/Library/Preferences/BackupAZ3 and then try again\n\nIf that does not fix it, please contact me: https://reddit.com/u/captinc37/"];
         [self.spinner stopAnimating];
         UIAlertAction *contactAction = [UIAlertAction actionWithTitle:@"Contact developer" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : @NO};
+            NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly:@NO};
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/message/compose/?to=captinc37&subject=Batchomatic%20creation%20error"] options:options completionHandler:nil];
         }];
         UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Dismiss" style:UIAlertActionStyleCancel handler:nil];
@@ -178,7 +178,7 @@ int refreshesCompleted = 0;
             while (!feof(listOfReposFile)) {
                 NSString *eachRepo = [self readEachLineOfFile:listOfReposFile];
                 if ([eachRepo isEqualToString:@"http://apt.thebigboss.org/repofiles/cydia/"] || [eachRepo isEqualToString:@"http://apt.modmyi.com/"] || [eachRepo isEqualToString:@"http://cydia.zodttd.com/repo/cydia/"]) {
-                    NSDictionary *dictionary = @{@"Distribution" : @"stable", @"Sections" : [NSArray arrayWithObject:@"main"], @"Type" : @"deb", @"URI" : eachRepo};
+                    NSDictionary *dictionary = @{@"Distribution":@"stable", @"Sections":[NSArray arrayWithObject:@"main"], @"Type":@"deb", @"URI":eachRepo};
                     [cydiaDelegate addSource:dictionary];
                 }
                 else {
@@ -385,7 +385,7 @@ int refreshesCompleted = 0;
     }
     else {
         if (self.packageManager == 1) {
-            [(Cydia *)[[UIApplication sharedApplication] delegate] requestUpdate];
+            [(Cydia *)[[UIApplication sharedApplication] delegate] queue];
         }
         else if (self.packageManager == 2) {
             [self.zebra_ZBTabBarController openQueue:YES];
