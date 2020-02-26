@@ -117,7 +117,13 @@ step8() {
 
     find /tmp/batchomatic/builddeb -name ".DS_Store" -type f -delete
     dpkg -b /tmp/batchomatic/builddeb /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs
-    echo "LOG: Created deb of one tweak"
+    if [ $? -eq 0 ]; then
+        echo "LOG: Created deb of this tweak"
+        return 0;
+    else
+        echo "Error: Deb creation for this tweak failed"
+        return 1;
+    fi
 }
 
 step9 () {
@@ -130,12 +136,12 @@ step9 () {
 step10 () {
     timestamp="`cat /tmp/batchomatic/timestamp.txt`"
     if ! dpkg -x /tmp/batchomatic/batchinstall-offline-"$timestamp".deb /tmp/batchomatic/verify; then
-        echo "Error: everything broke. The created .deb is invalid"
         echo "everythingbroke" > /tmp/batchomatic/nameOfDeb.txt
+        echo "Error: Offline deb creation failed"
     else
         mv /tmp/batchomatic/batchinstall-offline-"$timestamp".deb /var/mobile/BatchomaticDebs
         echo "batchinstall-offline-"$timestamp".deb" > /tmp/batchomatic/nameOfDeb.txt
-        echo "LOG: Done!"
+        echo "LOG: Done! The .deb is at /var/mobile/BatchomaticDebs"
     fi
 }
 
@@ -181,7 +187,13 @@ elif [ "$1" = deb ]; then
     step6
     step7
     step8 "$2"
-    mv /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs/*.deb /var/mobile/BatchomaticDebs
-    rm -r /tmp/batchomatic
-    echo "LOG: Done! The .deb is at /var/mobile/BatchomaticDebs"
+    if [ $? -eq 0 ]; then
+        filename="`ls /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs`"
+        mv /tmp/batchomatic/create/var/mobile/BatchInstall/OfflineDebs/$filename /var/mobile/BatchomaticDebs
+        echo "$filename" > /tmp/batchomatic/nameOfDeb.txt
+        echo "LOG: Done! The .deb is at /var/mobile/BatchomaticDebs"
+    else
+        echo "debcreationfailed" > /tmp/batchomatic/nameOfDeb.txt
+        echo "Error: Deb creation of a specific tweak failed"
+    fi
 fi

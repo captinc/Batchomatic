@@ -67,7 +67,7 @@ int refreshesCompleted = 0;
     NSString *debFileName = [self readEachLineOfFile:file];
     fclose(file);
     if ([debFileName isEqualToString:@"everythingbroke"]) {
-        [self transitionProgressMessage:@"Error: creation of your .deb failed\nTry deleting /var/mobile/Library/Preferences/com.rpetrich.pictureinpicture.license and /var/mobile/Library/Preferences/BackupAZ3 and then try again\n\nIf that does not fix it, please contact me: https://reddit.com/u/captinc37/"];
+        [self transitionProgressMessage:@"Error: creation of your .deb failed\nTry deleting /var/mobile/Library/Preferences/com.rpetrich.pictureinpicture.license, /var/mobile/Library/Preferences/BackupAZ3, and /var/mobile/Library/Preferences/Slices. Then try again\n\nIf that does not fix it, please contact me: https://reddit.com/u/captinc37"];
         [self.spinner stopAnimating];
         UIAlertAction *contactAction = [UIAlertAction actionWithTitle:@"Contact developer" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly:@NO};
@@ -78,7 +78,7 @@ int refreshesCompleted = 0;
         [self.processingDialog addAction:dismissAction];
     }
     else {
-        [self showFinishedCreatingDialog:@"Done!\nSuccesfully created your .deb!\nIt's at /var/mobile/BatchomaticDebs" pathToDeb:debFileName];
+        [self showFinishedCreatingDialog:debFileName];
     }
 }
 
@@ -441,7 +441,26 @@ int refreshesCompleted = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
-//methods to remove all tweaks and repos
+//methods to repack an installed tweak to a .deb and remove all tweaks and repos
+- (void)repackTweakWithIdentifier:(NSString *)packageID { //Repacks the specified package identifier to a .deb
+    [self runCommand:[NSString stringWithFormat:@"bmd deb %@", packageID]];
+    
+    FILE *file = fopen("/tmp/batchomatic/nameOfDeb.txt", "r");
+    NSString *debFileName = [self readEachLineOfFile:file];
+    fclose(file);
+    
+    if ([debFileName isEqualToString:@"debcreationfailed"]) {
+        NSString *msg = [NSString stringWithFormat:@"Error: creation of the .deb for this tweak failed. This is most likely a problem with that particular tweak\n\nTry running \"bmd deb %@%@", packageID, @"\" in Terminal for more information"];
+        [self transitionProgressMessage:msg];
+        [self.spinner stopAnimating];
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil];
+        [self.processingDialog addAction:okAction];
+    }
+    else {
+        [self showFinishedCreatingDialog:debFileName];
+    }
+}
+
 - (void)removeAllRepos { //Removes all currently-added repos from the current package manager
     self.isRemovingRepos = true;
     NSMutableArray *ignoredRepos = [[NSMutableArray alloc] init];
@@ -635,21 +654,24 @@ int refreshesCompleted = 0;
     }
     self.processingDialog = [UIAlertController alertControllerWithTitle:@"Batchomatic" message:totalMessage preferredStyle:UIAlertControllerStyleAlert];
     
+    UIActivityIndicatorView *spinner; //create a UIActivityIndicator inside a UIAlertController
     if (@available(iOS 13, *)) {
-        self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+        spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     }
     else {
-        self.spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+        spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     }
-    UIViewController *progressStatus = [[UIViewController alloc] init]; //position the UIActivityIndicator in the center of the UIAlertController
-    [progressStatus.view addSubview:self.spinner];
-    UILayoutGuide *margin = progressStatus.view.layoutMarginsGuide;
-    [self.spinner.centerXAnchor constraintEqualToAnchor:margin.centerXAnchor].active = YES;
-    [self.spinner.centerYAnchor constraintEqualToAnchor:margin.centerYAnchor].active = YES;
-    [self.processingDialog setValue:progressStatus forKey:@"contentViewController"];
+    UIViewController *spinnerVC = [[UIViewController alloc] init];
+    [spinnerVC.view addSubview:spinner];
     
-    self.spinner.hidesWhenStopped = YES;
-    [self.spinner startAnimating];
+    UILayoutGuide *margin = spinnerVC.view.layoutMarginsGuide; //center the UIActivityIndicator
+    [spinner.centerXAnchor constraintEqualToAnchor:margin.centerXAnchor].active = YES;
+    [spinner.centerYAnchor constraintEqualToAnchor:margin.centerYAnchor].active = YES;
+    
+    [self.processingDialog setValue:spinnerVC forKey:@"contentViewController"];
+    spinner.hidesWhenStopped = YES;
+    [spinner startAnimating];
+    self.spinner = spinner;
     if (shouldAutoPresentDialog) {
         [self.bm_currentBMController presentViewController:self.processingDialog animated:YES completion:nil];
     }
@@ -738,25 +760,25 @@ int refreshesCompleted = 0;
     }
 }
 
-- (void)showFinishedCreatingDialog:(NSString *)theMessage pathToDeb:(NSString *)debFileName { //UI for when creating a .deb finishes. This removes the UIActivityIndicator, transitions the text, and asks the user if they want to immediately share the created .deb
-    [self transitionProgressMessage:theMessage];
+- (void)showFinishedCreatingDialog:(NSString *)debFileName { //UI for when creating a .deb finishes. This removes the UIActivityIndicator, transitions the text, and asks the user if they want to immediately share the created .deb
+    [self transitionProgressMessage:@"Done!\nSuccesfully created your .deb!\nIt's at /var/mobile/BatchomaticDebs"];
     [self.spinner stopAnimating];
     UIAlertAction *exportAction = [UIAlertAction actionWithTitle:@"Export" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
         [self runCommand:@"bmd rmtemp"];
         NSArray *items = @[[NSURL fileURLWithPath:[NSString stringWithFormat:@"/var/mobile/BatchomaticDebs/%@", debFileName]]];
-        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
-        [activityViewController setValue:debFileName forKey:@"subject"];
+        UIActivityViewController *shareSheet = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
+        [shareSheet setValue:debFileName forKey:@"subject"];
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { //iPads require special positioning for the share sheet
-            activityViewController.modalPresentationStyle = UIModalPresentationPopover;
-            UIPopoverPresentationController *popPC = activityViewController.popoverPresentationController;
-            popPC.sourceView = [self.bm_BMHomeTableViewController view];
+            shareSheet.modalPresentationStyle = UIModalPresentationPopover;
+            UIPopoverPresentationController *popPC = shareSheet.popoverPresentationController;
+            popPC.sourceView = [self.bm_currentBMController view];
             CGRect sourceRext = CGRectZero;
             sourceRext.origin = CGPointMake(75, 0);
             popPC.sourceRect = sourceRext;
             popPC.permittedArrowDirections = UIPopoverArrowDirectionUp;
         }
-        [self.bm_BMHomeTableViewController presentViewController:activityViewController animated:YES completion:nil];
+        [self.bm_currentBMController presentViewController:shareSheet animated:YES completion:nil];
     }];
     UIAlertAction *dismissAction = [UIAlertAction actionWithTitle:@"Dismiss" style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
         [self runCommand:@"bmd rmtemp"];
@@ -878,16 +900,53 @@ int refreshesCompleted = 0;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
-//methods to determine info about the user's .deb
-- (bool)isDebInstalled { //Determines if the user's custom .deb is currently installed
-    if ([[self runCommand:@"dpkg -l | grep \"com.you.batchinstall\""] isEqualToString:@""]) { return false; }
-    else { return true; }
+//methods to determine info about the user's .deb and load a list of currently installed tweaks into an NSArray
+- (void)determineInfoAboutDeb {
+    if ([[self runCommand:@"dpkg -l | grep \"com.you.batchinstall\""] isEqualToString:@""]) { //determine if the user's .deb is currently installed
+        self.debIsInstalled = false;
+    }
+    else {
+        self.debIsInstalled = true;
+    }
+    
+    BOOL isFolder;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/mobile/BatchInstall/OfflineDebs" isDirectory:&isFolder]) { //determine if the currently installed .deb is meant for online mode or offline mode
+        self.debIsOnline = false;
+    }
+    else {
+        self.debIsOnline = true;
+    }
 }
 
-- (bool)isDebOnline { //Determines if the currently installed .deb is meant for online mode or offline mode
-    BOOL isDir;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/mobile/BatchInstall/OfflineDebs" isDirectory:&isDir]) { return false; }
-    else { return true; }
+- (void)loadListOfCurrentlyInstalledTweaks { //used only for "Repack tweak to .deb" (not used anywhere else)
+    [self runCommand:@"bmd getlist"];
+    
+    NSMutableArray *tweaks = [[NSMutableArray alloc] init];
+    FILE *file = fopen("/tmp/batchomaticGetList/tweaks.txt", "r");
+    while (!feof(file)) {
+        NSString *packageID = [self readEachLineOfFile:file];
+        NSString *cmd = [NSString stringWithFormat:@"dpkg-query -s %@%@", packageID, @" | grep \"Name: \" | sed 's/Name: //'"];
+        NSString *name = [self runCommand:cmd];
+        if ([name isEqualToString:@""]) {
+            name = packageID;
+        }
+        
+        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+        [dict setObject:name forKey:@"name"];
+        [dict setObject:packageID forKey:@"packageID"];
+        [tweaks addObject:dict];
+    }
+    fclose(file);
+    
+    NSSortDescriptor *descriptor = [[NSSortDescriptor alloc] initWithKey:@"name" ascending:YES selector:@selector(caseInsensitiveCompare:)];
+    self.currentlyInstalledTweaks = [[tweaks sortedArrayUsingDescriptors:@[descriptor]] copy];
+    
+    if ([self.bm_currentBMController isKindOfClass:%c(BMRepackTableViewController)]) { //when loading the list is finished, reload the tableview
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self.bm_BMRepackTableViewController createTableView];
+        });
+    }
+    [self runCommand:@"bmd rmgetlist"];
 }
 
 //--------------------------------------------------------------------------------------------------------------------------

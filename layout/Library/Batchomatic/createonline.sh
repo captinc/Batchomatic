@@ -31,15 +31,22 @@ step3 () {
 }
 
 step4 () {
-    dpkg --get-selections > /tmp/batchomatic/rawtweaks.txt
-    grep -v deinstall /tmp/batchomatic/rawtweaks.txt > /tmp/batchomatic/noDeinstalls.txt
-    grep -v gsc. /tmp/batchomatic/noDeinstalls.txt > /tmp/batchomatic/noGsc.txt
-    grep -o '^\S*' /tmp/batchomatic/noGsc.txt > /tmp/batchomatic/alltweaks.txt
-    sort -u /tmp/batchomatic/alltweaks.txt > /tmp/batchomatic/tweaksSorted.txt
-    sed -e :a -e '/./,$!d;/^\n*$/{$d;N;};/\n$/ba' /tmp/batchomatic/tweaksSorted.txt > /tmp/batchomatic/tweaksTrimmed.txt
-    diff --changed-group-format="%>" --unchanged-group-format="" /Library/Batchomatic/ignoredtweaks.txt /tmp/batchomatic/tweaksTrimmed.txt > /tmp/batchomatic/tweaksWithoutIgnores.txt
-    sort -u /tmp/batchomatic/tweaksWithoutIgnores.txt > /tmp/batchomatic/tweaksReSorted.txt
-    echo -n "`cat /tmp/batchomatic/tweaksReSorted.txt`" > /tmp/batchomatic/create/var/mobile/BatchInstall/tweaks.txt
+    if [ -z "$1" ]; then
+        motherPath="/tmp/batchomatic"
+    else
+        motherPath="$1"
+    fi
+    
+    dpkg --get-selections > $motherPath/rawtweaks.txt
+    grep -v deinstall $motherPath/rawtweaks.txt > $motherPath/noDeinstalls.txt
+    grep -v gsc. $motherPath/noDeinstalls.txt > $motherPath/noGsc.txt
+    grep -o '^\S*' $motherPath/noGsc.txt > $motherPath/alltweaks.txt
+    sort -u $motherPath/alltweaks.txt > $motherPath/tweaksSorted.txt
+    sed -e :a -e '/./,$!d;/^\n*$/{$d;N;};/\n$/ba' $motherPath/tweaksSorted.txt > $motherPath/tweaksTrimmed.txt
+    diff --changed-group-format="%>" --unchanged-group-format="" /Library/Batchomatic/ignoredtweaks.txt $motherPath/tweaksTrimmed.txt > $motherPath/tweaksWithoutIgnores.txt
+    sort -u $motherPath/tweaksWithoutIgnores.txt > $motherPath/tweaksReSorted.txt
+    theCommand="cat ${motherPath}/tweaksReSorted.txt"
+    echo -n "`eval ${theCommand}`" > $motherPath/create/var/mobile/BatchInstall/tweaks.txt
     echo "LOG: Gathered tweaks"
 }
 
@@ -94,12 +101,12 @@ step9 () {
 step10 () {
     timestamp="`cat /tmp/batchomatic/timestamp.txt`"
     if ! dpkg -x /tmp/batchomatic/batchinstall-online-"$timestamp".deb /tmp/batchomatic/verify; then
-        echo "Error: everything broke. The created .deb is invalid"
         echo "everythingbroke" > /tmp/batchomatic/nameOfDeb.txt
+        echo "Error: Online deb creation failed"
     else
         mv /tmp/batchomatic/batchinstall-online-"$timestamp".deb /var/mobile/BatchomaticDebs
         echo "batchinstall-online-"$timestamp".deb" > /tmp/batchomatic/nameOfDeb.txt
-        echo "LOG: Done!"
+        echo "LOG: Done! The .deb is at /var/mobile/BatchomaticDebs"
     fi
 }
 
@@ -134,4 +141,9 @@ elif [ "$1" = all ]; then
     step8
     step9
     step10
+elif [ "$1" = getlist ]; then
+    motherPath="/tmp/batchomaticGetList"
+    mkdir -p $motherPath/create/var/mobile/BatchInstall
+    step4 "$motherPath"
+    mv $motherPath/create/var/mobile/BatchInstall/tweaks.txt $motherPath
 fi

@@ -10,6 +10,7 @@ bzip2
 ca-certificates
 com.bingner.snappy
 com.ex.libsubstitute
+com.ex.substitute
 com.ps.letmeblock
 com.saurik.substrate
 com.saurik.substrate.safemode
@@ -30,6 +31,8 @@ cydia-dark
 cydia-lproj
 darwintools
 debianutils
+debugserver
+debugserver-10
 diffutils
 diskdev-cmds
 dpkg
@@ -46,15 +49,18 @@ gnutls
 grep
 gzip
 jailbreak-resources
+jbctl
 launchctl
 ldid
 libapt
 libapt-pkg5.0
 libassuan
+libclang-cpp10
 libgmp10
 libgpg-error
 libidn2
 libksba
+libllvm10
 libplist
 libressl
 libssl1.0
@@ -73,6 +79,7 @@ org.thebigboss.repo.icons
 p11-kit
 profile.d
 readline
+science.xnu.substituted
 sed
 shell-cmds
 signing-certificate

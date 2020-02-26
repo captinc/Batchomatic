@@ -1,25 +1,17 @@
-@interface BMHomeTableViewController : UITableViewController
+@interface BMRepackTableViewController : UITableViewController
+@property UIActivityIndicatorView *spinner;
 - (void)viewDidLoad;
 - (void)viewWillAppear:(BOOL)animated;
 
-- (void)createNavBar;
+- (void)placeActivityIndicator;
 - (void)createTableView;
-- (void)addVersionNumberFooter;
 
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section;
-- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section;
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 
-- (void)didTapEitherCreateDebButton:(int)type;
-- (void)didTapInstallDebButton;
-- (void)didTapEitherRemoveAllButton:(int)type;
-- (void)didTapRespringButton;
+- (void)didTapRepackTweakWithIdentifier:(NSString *)packageID;
 - (void)didTapBackButton;
-- (void)didTapHelpButton;
-
-- (void)dealloc;
 @end

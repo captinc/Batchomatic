@@ -1,6 +1,7 @@
 @interface BMInstallTableViewController : UITableViewController
 - (void)viewDidLoad;
 - (void)viewWillAppear:(BOOL)animated;
+
 - (void)createTableView;
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
@@ -11,5 +12,5 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath;
 
 - (void)didTapProceedButton;
-- (void)didTapDismissButton;
+- (void)didTapBackButton;
 @end

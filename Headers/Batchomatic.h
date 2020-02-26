@@ -1,10 +1,12 @@
-#import "Tweak.h"
 #import "BMHomeTableViewController.h"
 #import "BMInstallTableViewController.h"
+#import "BMRepackTableViewController.h"
+#import "Tweak.h"
 
 @interface Batchomatic : NSObject
 @property BMHomeTableViewController *bm_BMHomeTableViewController;
 @property BMInstallTableViewController *bm_BMInstallTableViewController;
+@property BMRepackTableViewController *bm_BMRepackTableViewController;
 @property id bm_currentBMController;
 
 @property id motherClass;
@@ -27,12 +29,14 @@
 
 @property int packageManager;
 @property bool isRemovingRepos;
+@property bool debIsInstalled;
+@property bool debIsOnline;
+@property NSArray *currentlyInstalledTweaks;
+
 @property UIAlertController *processingDialog;
 @property UIActivityIndicatorView *spinner;
 @property int maxSteps;
 @property int currentStep;
-@property bool debIsInstalled;
-@property bool debIsOnline;
 
 + (instancetype)sharedInstance;
 + (void)placeButton:(UIViewController *)sender;
@@ -52,6 +56,8 @@
 - (void)sileoFixDependencies:(NSMutableString *)unfindableTweaks transition:(bool)shouldTransition;
 - (void)sileoAddDependenciesToQueue;
 
+- (void)repackTweakWithIdentifier:(NSString *)packageID;
+
 - (void)removeAllRepos;
 - (void)removeAllTweaks;
 
@@ -59,15 +65,15 @@
 - (void)transitionProgressMessage:(NSString *)theMessage;
 - (NSString *)updateProgressMessage:(NSString *)wordMessage;
 - (void)endProcessingDialog:(NSString *)theMessage transition:(bool)shouldTransition shouldOpenBMHomeViewControllerFirst:(bool)shouldOpenBMHomeViewControllerFirst;
-- (void)showFinishedCreatingDialog:(NSString *)theMessage pathToDeb:(NSString *)debFileName;
+- (void)showFinishedCreatingDialog:(NSString *)debFileName;
 
 - (UIStackView *)createASwitchWithLabel:(NSString *)message tag:(int)theTag defaultState:(BOOL)onOrOff;
 - (UIStackView *)createOptionsSwitches:(int)type;
 - (UIAlertController *)placeUISwitchInsideUIAlertController:(UIAlertController *)optionsAlert whichScreen:(int)screen;
 - (void)toggleTapped:(UISwitch *)sender;
 
-- (bool)isDebInstalled;
-- (bool)isDebOnline;
+- (void)determineInfoAboutDeb;
+- (void)loadListOfCurrentlyInstalledTweaks;
 
 - (NSString *)runCommand:(NSString *)theCommand;
 - (NSString *)readEachLineOfFile:(FILE *)file;

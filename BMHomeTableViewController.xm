@@ -1,22 +1,23 @@
+#import "Headers/Batchomatic.h"
 #import "Headers/BMHomeTableViewController.h"
 #import "Headers/BMInstallTableViewController.h"
-#import "Headers/Batchomatic.h"
+#import "Headers/BMRepackTableViewController.h"
 
-@implementation BMHomeTableViewController //The main "Batchomatic" screen where you choose what feature to use
-- (instancetype)init {
-    self = [super init];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkDeb) name:UIApplicationWillEnterForegroundNotification object:nil]; //see "- (void)checkDeb" for an explanation about this
-    return self;
-}
-
+@implementation BMHomeTableViewController //The main Batchomatic screen where you choose what feature to use
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [Batchomatic sharedInstance].bm_BMHomeTableViewController = self;
+    Batchomatic *bm = [Batchomatic sharedInstance];
+    bm.bm_BMHomeTableViewController = self;
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) { //must use dispatch_async to prevent the UI from freezing
+        [bm determineInfoAboutDeb];
+    });
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+        [bm loadListOfCurrentlyInstalledTweaks];
+    });
+    
     [self createNavBar];
     [self createTableView];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) { //we need to check the .deb, but we don't want that to lag/delay opening the Batchomatic UI
-        [self checkDeb];
-    });
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -30,7 +31,7 @@
     self.navigationItem.title = @"Batchomatic";
     UINavigationBar *navBar = self.navigationController.navigationBar;
     navBar.prefersLargeTitles = YES;
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(didTapDismissButton)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(didTapBackButton)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Help" style:UIBarButtonItemStylePlain target:self action:@selector(didTapHelpButton)];
     
     NSBundle *bundle = [NSBundle bundleWithPath:@"/Library/Batchomatic/Icon.bundle"]; //custom view in UINavigationBarLargeTitleView for the icon
@@ -55,8 +56,8 @@
 }
 
 - (void)createTableView {
-    CGRect frame = CGRectMake(0, 0, self.view.frame.size.width, 1/[UIScreen mainScreen].scale);
-    UITableView *tableView = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
+    CGRect frame = CGRectMake(0, 0, self.view.frame.size.width, [UIScreen mainScreen].bounds.size.height);
+    UITableView *tableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain];
     [tableView registerClass:[UITableViewCell self] forCellReuseIdentifier:@"Cell"];
     tableView.dataSource = self;
     tableView.delegate = self;
@@ -64,11 +65,12 @@
 }
 
 - (void)addVersionNumberFooter { //Add the version number as footer of the UITableView
+    Batchomatic *bm = [Batchomatic sharedInstance];
     UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 28)];
     UILabel *label = [[UILabel alloc] initWithFrame:footer.frame];
-    label.text = @"v4.2.1";
+    label.text = @"v4.3";
     label.textAlignment = NSTextAlignmentCenter;
-    if ([Batchomatic sharedInstance].packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) { //Zebra has its own dark mode that doesn't follow the iOS 13 dark mode, so we need to manually set the text color when in Zebra's dark mode
+    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) { //Zebra has its own dark mode that doesn't follow the iOS 13 dark mode, so we need to manually set the text color when in Zebra's dark mode
         label.textColor = [UIColor whiteColor];
     }
     [footer addSubview:label];
@@ -85,7 +87,7 @@
         return 3;
     }
     else if (section == 1) {
-        return 2;
+        return 3;
     }
     else {
         return 1;
@@ -109,13 +111,14 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
-    if (cell == nil) {
+    if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
+    Batchomatic *bm = [Batchomatic sharedInstance];
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:22];
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
-    if ([Batchomatic sharedInstance].packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
+    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
         cell.textLabel.textColor = [UIColor whiteColor];
     }
     
@@ -124,7 +127,7 @@
         cell.textLabel.text = [cellTitles objectAtIndex:indexPath.row];
     }
     else if (indexPath.section == 1) { //middle section
-        NSArray *cellTitles = @[@"Remove all repos", @"Remove all tweaks"];
+        NSArray *cellTitles = @[@"Repack tweak to .deb", @"Remove all repos", @"Remove all tweaks"];
         cell.textLabel.text = [cellTitles objectAtIndex:indexPath.row];
     }
     else { //bottom section
@@ -151,9 +154,12 @@
     }
     else if (indexPath.section == 1) {
         if (indexPath.row == 0) {
-            [self didTapEitherRemoveAllButton:1];
+            [self didTapRepackTweakButton];
         }
         else if (indexPath.row == 1) {
+            [self didTapEitherRemoveAllButton:1];
+        }
+        else if (indexPath.row == 2) {
             [self didTapEitherRemoveAllButton:2];
         }
     }
@@ -184,7 +190,8 @@
 }
 
 - (void)didTapInstallDebButton { //Shows the Install options screen (BMInstallTableViewController) if your .deb is currently installed
-    if ([Batchomatic sharedInstance].debIsInstalled) {
+    Batchomatic *bm = [Batchomatic sharedInstance];
+    if (bm.debIsInstalled) {
         UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[BMInstallTableViewController alloc] init]];
         [self presentViewController:nav animated:YES completion:nil];
     }
@@ -194,6 +201,11 @@
         [alert addAction:okAction];
         [self presentViewController:alert animated:YES completion:nil];
     }
+}
+
+- (void)didTapRepackTweakButton {
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:[[BMRepackTableViewController alloc] init]];
+    [self presentViewController:nav animated:YES completion:nil];
 }
 
 - (void)didTapEitherRemoveAllButton:(int)type { //Asks the user if they want to keep utiity repos and BigBoss when removing all repos. Also handles asking to keep package managers, Filza, and Batchomatic itself when removing all tweaks
@@ -235,33 +247,16 @@
     [[Batchomatic sharedInstance] endProcessingDialog:nil transition:false shouldOpenBMHomeViewControllerFirst:false];
 }
 
-- (void)didTapDismissButton {
+- (void)didTapBackButton {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)didTapHelpButton {
     NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly:@NO};
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install/"] options:options completionHandler:nil];
-}
-
-//--------------------------------------------------------------------------------------------------------------------------
-- (void)checkDeb { //Everytime the main Batchomatic screen enters the foreground, it checks if your .deb is installed and whether its online or offfline. Determining this info takes about 1 second, which causes 1 second of lag whenever you press the "Install .deb" or "Proceed" buttons/rows. This implementation with dispatch_async, NSNotificationCenter, and UIApplicationWillEnterForegroundNotification fixes that
-    Batchomatic *bm = [Batchomatic sharedInstance];
-    if ([bm isDebInstalled]) {
-        bm.debIsInstalled = true;
-    }
-    else {
-        bm.debIsInstalled = false;
-    }
-    if ([bm isDebOnline]) {
-        bm.debIsOnline = true;
-    }
-    else {
-        bm.debIsOnline = false;
-    }
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install"] options:options completionHandler:nil];
 }
 
 - (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [Batchomatic sharedInstance].currentlyInstalledTweaks = nil;
 }
 @end

@@ -1,13 +1,15 @@
-#import "Headers/BMInstallTableViewController.h"
 #import "Headers/Batchomatic.h"
+#import "Headers/BMInstallTableViewController.h"
 
 @implementation BMInstallTableViewController //The installation options screen
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [Batchomatic sharedInstance].bm_BMInstallTableViewController = self;
-    [self createTableView];
+    Batchomatic *bm = [Batchomatic sharedInstance];
+    bm.bm_BMInstallTableViewController = self;
+    
     self.navigationItem.title = @"Batchomatic";
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(didTapDismissButton)];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(didTapBackButton)];
+    [self createTableView];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -16,8 +18,8 @@
 }
 
 - (void)createTableView {
-    CGRect frame = CGRectMake(0, 0, self.view.frame.size.width, 1/[UIScreen mainScreen].scale);
-    UITableView *tableView = [[UITableView alloc]initWithFrame:frame style:UITableViewStylePlain];
+    CGRect frame = CGRectMake(0, 0, self.view.frame.size.width, [UIScreen mainScreen].bounds.size.height);
+    UITableView *tableView = [[UITableView alloc] initWithFrame:frame style:UITableViewStylePlain];
     [tableView registerClass:[UITableViewCell self] forCellReuseIdentifier:@"Cell"];
     tableView.dataSource = self;
     tableView.delegate = self;
@@ -46,12 +48,13 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
-    if (cell == nil) {
+    if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
+    Batchomatic *bm = [Batchomatic sharedInstance];
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:22];
-    if ([Batchomatic sharedInstance].packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
+    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
         cell.textLabel.textColor = [UIColor whiteColor];
     }
     
@@ -60,7 +63,6 @@
         cell.textLabel.text = [cellTitles objectAtIndex:indexPath.row];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         
-        Batchomatic *bm = [Batchomatic sharedInstance];
         UISwitch *toggle = [[UISwitch alloc] initWithFrame:CGRectZero];
         toggle.tag = indexPath.row;
         [toggle setOn:YES animated:YES];
@@ -131,7 +133,7 @@
     }];
 }
 
-- (void)didTapDismissButton {
+- (void)didTapBackButton {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 @end

@@ -47,7 +47,36 @@ int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the
     
     NSTask *task = [[NSTask alloc] init];
     NSMutableArray *args = [[NSMutableArray alloc] init];
-    if (!strcmp(argv[1], "deb")) { //creating a .deb of a single tweak
+    if (!strcmp(argv[1], "rmtemp")) { //misc utilities
+        [task setLaunchPath:@"/bin/rm"];
+        [args addObject:@"-r"];
+        [args addObject:@"/tmp/batchomatic"];
+    }
+    else if (!strcmp(argv[1], "chperms1")) {
+        [task setLaunchPath:@"/bin/chmod"];
+        [args addObject:@"-R"];
+        [args addObject:@"777"];
+        [args addObject:@"/var/mobile/BatchInstall/SavedDebs"];
+    }
+    else if (!strcmp(argv[1], "chperms2")) {
+        [task setLaunchPath:@"/bin/chmod"];
+        [args addObject:@"-R"];
+        [args addObject:@"777"];
+        [args addObject:@"/var/mobile/BatchInstall/OfflineDebs"];
+    }
+    //--------------------------------------------------------------------------------------------------------------------------
+    else if (!strcmp(argv[1], "getlist")) { //loading a list of currently installed tweaks for the "Repack tweak to .deb" menu
+        [task setLaunchPath:@"/bin/bash"];
+        [args addObject:@"/Library/Batchomatic/createonline.sh"];
+        [args addObject:@"getlist"];
+    }
+    else if (!strcmp(argv[1], "rmgetlist")) {
+        [task setLaunchPath:@"/bin/rm"];
+        [args addObject:@"-r"];
+        [args addObject:@"/tmp/batchomaticGetList"];
+    }
+    //--------------------------------------------------------------------------------------------------------------------------
+    else if (!strcmp(argv[1], "deb")) { //creating a .deb of a single tweak
         if (argc > 2) {
             [task setLaunchPath:@"/usr/bin/bmd"];
             [args addObject:@"rmtemp"];
@@ -66,24 +95,6 @@ int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the
             printf("Error: you did not specify a package identifier\n");
             return 1;
         }
-    }
-    //--------------------------------------------------------------------------------------------------------------------------
-    else if (!strcmp(argv[1], "rmtemp")) { //misc utilities
-        [task setLaunchPath:@"/bin/rm"];
-        [args addObject:@"-r"];
-        [args addObject:@"/tmp/batchomatic"];
-    }
-    else if (!strcmp(argv[1], "chperms1")) {
-        [task setLaunchPath:@"/bin/chmod"];
-        [args addObject:@"-R"];
-        [args addObject:@"777"];
-        [args addObject:@"/var/mobile/BatchInstall/SavedDebs"];
-    }
-    else if (!strcmp(argv[1], "chperms2")) {
-        [task setLaunchPath:@"/bin/chmod"];
-        [args addObject:@"-R"];
-        [args addObject:@"777"];
-        [args addObject:@"/var/mobile/BatchInstall/OfflineDebs"];
     }
     //--------------------------------------------------------------------------------------------------------------------------
     else if (!strcmp(argv[1], "installprefs")) { //installing the .deb
