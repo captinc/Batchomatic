@@ -1,11 +1,11 @@
-# Batchomatic v4.3
+# Batchomatic v4.3.1
 Batch install your tweaks, repos, saved .debs, tweak preferences, and hosts file! All at once, online or offline. Can also remove all tweaks/repos, repack an installed tweak to a .deb, and add a respring/uicache button to each package manager. A real time saver!
 
 Compatible with iOS 11.0+. Works with Cydia, Zebra, Sileo, and Installer on unc0ver, checkra1n, Chimera, and unc0ver dark
 
 Repo: BigBoss or [https://captinc.github.io](https://captinc.github.io)
 
-[Direct .deb download](https://github.com/captinc/Batchomatic/releases/download/v4.3/com.captinc.batchomatic_4.3_iphoneos-arm.deb)
+[Direct .deb download](https://github.com/captinc/Batchomatic/releases/download/v4.3.1/com.captinc.batchomatic_4.3.1_iphoneos-arm.deb)
 
 [Reddit post](https://www.reddit.com/r/jailbreak/comments/cqarr6/release_batchomatic_v30_on_bigboss_batch_install)
 

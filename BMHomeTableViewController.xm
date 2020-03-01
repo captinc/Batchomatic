@@ -4,6 +4,10 @@
 #import "Headers/BMRepackTableViewController.h"
 
 @implementation BMHomeTableViewController //The main Batchomatic screen where you choose what feature to use
+- (NSString *)versionNumber {
+    return @"v4.3.1";
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     Batchomatic *bm = [Batchomatic sharedInstance];
@@ -11,8 +15,6 @@
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) { //must use dispatch_async to prevent the UI from freezing
         [bm determineInfoAboutDeb];
-    });
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
         [bm loadListOfCurrentlyInstalledTweaks];
     });
     
@@ -68,7 +70,7 @@
     Batchomatic *bm = [Batchomatic sharedInstance];
     UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 28)];
     UILabel *label = [[UILabel alloc] initWithFrame:footer.frame];
-    label.text = @"v4.3";
+    label.text = [self versionNumber];
     label.textAlignment = NSTextAlignmentCenter;
     if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) { //Zebra has its own dark mode that doesn't follow the iOS 13 dark mode, so we need to manually set the text color when in Zebra's dark mode
         label.textColor = [UIColor whiteColor];

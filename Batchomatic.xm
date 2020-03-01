@@ -918,7 +918,8 @@ int refreshesCompleted = 0;
     }
 }
 
-- (void)loadListOfCurrentlyInstalledTweaks { //used only for "Repack tweak to .deb" (not used anywhere else)
+- (void)loadListOfCurrentlyInstalledTweaks { //Used only for "Repack tweak to .deb" (not used anywhere else)
+    [self runCommand:@"bmd rmgetlist"];
     [self runCommand:@"bmd getlist"];
     
     NSMutableArray *tweaks = [[NSMutableArray alloc] init];
@@ -946,6 +947,7 @@ int refreshesCompleted = 0;
             [self.bm_BMRepackTableViewController createTableView];
         });
     }
+    
     [self runCommand:@"bmd rmgetlist"];
 }
 

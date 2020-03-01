@@ -1,4 +1,5 @@
 @interface BMHomeTableViewController : UITableViewController
+- (NSString *)versionNumber;
 - (void)viewDidLoad;
 - (void)viewWillAppear:(BOOL)animated;
 
