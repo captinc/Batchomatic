@@ -54,7 +54,7 @@
     Batchomatic *bm = [Batchomatic sharedInstance];
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:22];
-    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
+    if (bm.packageManager == 2 ) {
         cell.textLabel.textColor = [UIColor whiteColor];
     }
     

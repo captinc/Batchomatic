@@ -37,7 +37,7 @@
 
 //--------------------------------------------------------------------------------------------------------------------------
 //Zebra
-@interface ZBSearchViewController : UITableViewController
+@interface ZBSearchTableViewController : UITableViewController
 - (void)viewDidLoad;
 - (void)startBatchomatic;
 @end
@@ -46,8 +46,8 @@
 - (void)refreshSources:(id)sender;
 @end
 
-@interface ZBRepoListTableViewController : ZBRefreshableTableViewController
-- (void)didAddReposWithText:(NSString *)text;
+@interface ZBSourceListTableViewController : UITableViewController
+- (void)handleImportOf:(NSURL *)url;
 - (void)refreshTable;
 @end
 
@@ -70,27 +70,28 @@ typedef enum {
 
 @interface ZBTabBarController : UITabBarController
 - (void)openQueue:(BOOL)openPopup;
-- (void)setRepoRefreshIndicatorVisible:(BOOL)visible;
+- (void)setSourceRefreshIndicatorVisible:(BOOL)visible;
 @end
 
-@interface ZBRepo : NSObject
+@interface ZBource : NSObject
 - (NSMutableString *)shortURL;
 @end
 
-@interface ZBRepoManager : NSObject
+@interface ZBSourceManager : NSObject
 + (instancetype)sharedInstance;
-- (void)deleteSource:(ZBRepo *)repo;
+- (NSMutableDictionary *)sources;
+- (void)deleteSource:(ZBSource *)source;
 @end
 
 @interface ZBDatabaseManager : NSObject
 + (instancetype)sharedInstance;
 - (ZBPackage *)topVersionForPackageID:(NSString *)packageIdentifier;
 - (BOOL)packageIDIsInstalled:(NSString *)packageIdentifier version:(NSString *)version;
-- (NSMutableArray *)repos;
+- (NSSet *)sources;
 @end
 
-@interface ZBDevice : NSObject
-+ (BOOL)darkModeEnabled;
+@interface ZBSettings : NSObject
++ (NSString *)InterfaceStyleKey;
 @end
 
 //--------------------------------------------------------------------------------------------------------------------------

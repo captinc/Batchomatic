@@ -11,7 +11,8 @@
 
 @property id motherClass;
 @property ZBTabBarController *zebra_ZBTabBarController;
-@property ZBRepoListTableViewController *zebra_ZBRepoListTableViewController;
+@property ZBSourceListTableViewController *zebra_ZBSourceListTableViewController;
+@property ZBRefreshableTableViewController *zebra_ZBRefreshableTableViewController;
 @property _TtC5Sileo21SourcesViewController *sileo_SourcesViewController;
 @property ATTabBarController *installer_ATTabBarController;
 @property ManageViewController *installer_ManageViewController;

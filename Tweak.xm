@@ -42,7 +42,7 @@ extern int refreshesCompleted;
 
 //--------------------------------------------------------------------------------------------------------------------------
 //Zebra
-%hook ZBSearchViewController
+%hook ZBSearchTableViewController
 - (void)viewDidLoad {
     %orig;
     [Batchomatic placeButton:self];
@@ -54,8 +54,8 @@ extern int refreshesCompleted;
     bm.motherClass = self;
     bm.zebra_ZBTabBarController = (ZBTabBarController *)self.tabBarController; //this saves the instance of ZBTabBarController for later use
     UINavigationController *ctrl = self.tabBarController.viewControllers[1];
-    bm.zebra_ZBRepoListTableViewController = (ZBRepoListTableViewController *)ctrl.viewControllers[0]; //and this saves the instance of ZBRepoListTableViewController
-    [bm.zebra_ZBRepoListTableViewController viewDidLoad];
+    bm.zebra_ZBSourceListTableViewController = (ZBSourceListTableViewController *)ctrl.viewControllers[0]; //and this saves the instance of ZBSourceListTableViewController
+    [bm.zebra_ZBSourceListTableViewController viewDidLoad];
     [Batchomatic openMainScreen:self];
 }
 %end

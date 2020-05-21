@@ -189,11 +189,11 @@ int refreshesCompleted = 0;
         }
         
         else if (self.packageManager == 2) { //if we are using Zebra
-            NSString *reposToAdd = [NSString stringWithContentsOfFile:@"/tmp/batchomatic/reposToAdd.txt" encoding:NSUTF8StringEncoding error:nil];
+            NSURL *url = [NSURL fileURLWithPath:@"/tmp/batchomatic/reposToAdd.txt"]; 
             [self.processingDialog dismissViewControllerAnimated:YES completion:^{
                 [self.bm_BMInstallTableViewController dismissViewControllerAnimated:YES completion:^{
                     [self.bm_BMHomeTableViewController dismissViewControllerAnimated:YES completion:^{
-                        [self.zebra_ZBRepoListTableViewController didAddReposWithText:reposToAdd];
+                        [self.zebra_ZBSourceListTableViewController handleImportOf:url];
                     }];
                 }];
             }];
@@ -502,21 +502,19 @@ int refreshesCompleted = 0;
             }
             [ignoredRepos replaceObjectAtIndex:x withObject:url];
         }
-        
-        NSArray *allRepos = [[[%c(ZBDatabaseManager) sharedInstance] repos] copy];
+        NSArray *allRepos = [[[%c(ZBDatabaseManager) sharedInstance] sources] copy];
         for (int x = 0; x < [allRepos count]; x++) {
-            NSString *url = [(ZBRepo *)[allRepos objectAtIndex:x] shortURL];
+            NSString *url = [(ZBSource *)[allRepos objectAtIndex:x] shortURL];
             if ([url isEqualToString:@"getzbra.com/repo/"]) {
                 continue;
             }
             if (!self.removeAllReposSwitchStatus && [ignoredRepos containsObject:url]) {
                 continue;
             }
-            [[%c(ZBRepoManager) sharedInstance] deleteSource:(ZBRepo *)[allRepos objectAtIndex:x]];
+            [[%c(ZBSourceManager) sharedInstance] deleteSource:(ZBSource *)[allRepos objectAtIndex:x]];
         }
-        
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-        [self.zebra_ZBRepoListTableViewController refreshSources:refreshControl];
+        [self.zebra_ZBRefreshableTableViewController refreshSources:refreshControl];
     }
     
     else if (self.packageManager == 3) { //Sileo

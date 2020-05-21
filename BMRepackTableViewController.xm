@@ -31,7 +31,7 @@
         spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     }
     Batchomatic *bm = [Batchomatic sharedInstance];
-    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
+    if (bm.packageManager == 2) {
         spinner.color = [UIColor colorWithRed:0.557 green:0.557 blue:0.576 alpha:1];
     }
     
@@ -76,7 +76,7 @@
     cell.textLabel.font = [UIFont systemFontOfSize:18];
     cell.detailTextLabel.font = [UIFont systemFontOfSize:12];
     cell.detailTextLabel.textColor = [UIColor systemGrayColor]; //make the package ID text a light gray
-    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
+    if (bm.packageManager == 2 ) {
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.detailTextLabel.textColor = [UIColor colorWithRed:0.557 green:0.557 blue:0.576 alpha:1];
     }
