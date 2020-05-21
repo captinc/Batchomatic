@@ -72,7 +72,6 @@
     UILabel *label = [[UILabel alloc] initWithFrame:footer.frame];
     label.text = [self versionNumber];
     label.textAlignment = NSTextAlignmentCenter;
-    // && [%c(ZBDevice) darkModeEnabled]
     if (bm.packageManager == 2 ) { //Zebra has its own dark mode that doesn't follow the iOS 13 dark mode, so we need to manually set the text color when in Zebra's dark mode
         label.textColor = [UIColor whiteColor];
     }
@@ -121,7 +120,6 @@
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:22];
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
-    // && [%c(ZBDevice) darkModeEnabled]
     if (bm.packageManager == 2) {
         cell.textLabel.textColor = [UIColor whiteColor];
     }
