@@ -73,7 +73,7 @@ typedef enum {
 - (void)setSourceRefreshIndicatorVisible:(BOOL)visible;
 @end
 
-@interface ZBource : NSObject
+@interface ZBSource : NSObject
 - (NSMutableString *)shortURL;
 @end
 
