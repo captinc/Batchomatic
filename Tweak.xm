@@ -69,16 +69,6 @@ extern int refreshesCompleted;
 }
 %end
 
-%hook ZBTabBarController
-- (void)setRepoRefreshIndicatorVisible:(BOOL)visible { //Zebra calls this method when it finishes removing repos
-    %orig;
-    Batchomatic *bm = [Batchomatic sharedInstance];
-    if (bm.isRemovingRepos) {
-        [bm processingReposDidFinish:true];
-    }
-}
-%end
-
 //--------------------------------------------------------------------------------------------------------------------------
 //Sileo
 %hook _TtC5Sileo25PackageListViewController

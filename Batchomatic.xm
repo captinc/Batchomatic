@@ -492,29 +492,18 @@ int refreshesCompleted = 0;
     }
     
     else if (self.packageManager == 2) { //Zebra
-        for (int x = 0; x < [ignoredRepos count]; x++) {
-            NSString *url = [ignoredRepos objectAtIndex:x];
-            if ([url hasPrefix:@"http://"]) {
-                url = [url substringFromIndex:[@"http://" length]];
-            }
-            if ([url hasPrefix:@"https://"]) {
-                url = [url substringFromIndex:[@"https://" length]];
-            }
-            [ignoredRepos replaceObjectAtIndex:x withObject:url];
-        }
         NSArray *allRepos = [[[%c(ZBDatabaseManager) sharedInstance] sources] copy];
-        for (int x = 0; x < [allRepos count]; x++) {
-            NSString *url = [(ZBSource *)[allRepos objectAtIndex:x] shortURL];
-            if ([url isEqualToString:@"getzbra.com/repo/"]) {
+        for (ZBBaseSource *source in allRepos) {
+            if ([source.repositoryURI isEqualToString:@"https://getzbra.com/repo/"]) {
                 continue;
             }
-            if (!self.removeAllReposSwitchStatus && [ignoredRepos containsObject:url]) {
+            if (!self.removeAllReposSwitchStatus && [ignoredRepos containsObject:source.repositoryURI]) {
                 continue;
             }
-            [[%c(ZBSourceManager) sharedInstance] deleteSource:(ZBSource *)[allRepos objectAtIndex:x]];
+            [[%c(ZBSourceManager) sharedInstance] deleteSource:(ZBSource *)source];
         }
-        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-        [self.zebra_ZBRefreshableTableViewController refreshSources:refreshControl];
+        [self.zebra_ZBSourceListTableViewController refreshTable];
+        [self processingReposDidFinish:true];
     }
     
     else if (self.packageManager == 3) { //Sileo

@@ -42,10 +42,6 @@
 - (void)startBatchomatic;
 @end
 
-@interface ZBRefreshableTableViewController : UITableViewController
-- (void)refreshSources:(id)sender;
-@end
-
 @interface ZBSourceListTableViewController : UITableViewController
 - (void)handleImportOf:(NSURL *)url;
 - (void)refreshTable;
@@ -70,11 +66,13 @@ typedef enum {
 
 @interface ZBTabBarController : UITabBarController
 - (void)openQueue:(BOOL)openPopup;
-- (void)setSourceRefreshIndicatorVisible:(BOOL)visible;
 @end
 
 @interface ZBSource : NSObject
-- (NSMutableString *)shortURL;
+@end
+
+@interface ZBBaseSource : NSObject
+@property (nonatomic) NSString *repositoryURI;
 @end
 
 @interface ZBSourceManager : NSObject

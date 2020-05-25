@@ -66,6 +66,7 @@
     if (!cell || !cell.detailTextLabel) { //in order to make detailTextLabel work, you must check if cell is nil or if cell.detailTextLabel is nil
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
+    Batchomatic *bm = [Batchomatic sharedInstance];
     NSDictionary *tweakInfo = [bm.currentlyInstalledTweaks objectAtIndex:indexPath.row];
     
     cell.textLabel.font = [UIFont systemFontOfSize:18];
