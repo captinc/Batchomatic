@@ -66,16 +66,11 @@
     if (!cell || !cell.detailTextLabel) { //in order to make detailTextLabel work, you must check if cell is nil or if cell.detailTextLabel is nil
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
-    Batchomatic *bm = [Batchomatic sharedInstance];
     NSDictionary *tweakInfo = [bm.currentlyInstalledTweaks objectAtIndex:indexPath.row];
     
     cell.textLabel.font = [UIFont systemFontOfSize:18];
     cell.detailTextLabel.font = [UIFont systemFontOfSize:12];
     cell.detailTextLabel.textColor = [UIColor systemGrayColor]; //make the package ID text a light gray
-    if (bm.packageManager == 2 ) {
-        cell.textLabel.textColor = [UIColor whiteColor];
-        cell.detailTextLabel.textColor = [UIColor colorWithRed:0.557 green:0.557 blue:0.576 alpha:1];
-    }
     cell.textLabel.text = [tweakInfo objectForKey:@"name"];
     cell.detailTextLabel.text = [NSString stringWithFormat:@"\t%@", [tweakInfo objectForKey:@"packageID"]];
     
