@@ -54,9 +54,6 @@
     Batchomatic *bm = [Batchomatic sharedInstance];
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:22];
-    if (bm.packageManager == 2 ) {
-        cell.textLabel.textColor = [UIColor whiteColor];
-    }
     
     if (indexPath.section == 0) { //put a UISwitch in each row of the top section
         NSArray *cellTitles = @[@"Install preferences", @"Install hosts file", @"Install saved .debs", @"Add repos", @"Queue tweaks", @"Install offline tweaks"];

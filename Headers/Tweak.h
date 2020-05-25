@@ -90,10 +90,6 @@ typedef enum {
 - (NSSet *)sources;
 @end
 
-@interface ZBSettings : NSObject
-+ (NSString *)InterfaceStyleKey;
-@end
-
 //--------------------------------------------------------------------------------------------------------------------------
 //Sileo
 @interface _TtC5Sileo25PackageListViewController : UIViewController

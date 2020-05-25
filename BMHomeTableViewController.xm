@@ -67,14 +67,10 @@
 }
 
 - (void)addVersionNumberFooter { //Add the version number as footer of the UITableView
-    Batchomatic *bm = [Batchomatic sharedInstance];
     UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 28)];
     UILabel *label = [[UILabel alloc] initWithFrame:footer.frame];
     label.text = [self versionNumber];
     label.textAlignment = NSTextAlignmentCenter;
-    if (bm.packageManager == 2 ) { //Zebra has its own dark mode that doesn't follow the iOS 13 dark mode, so we need to manually set the text color when in Zebra's dark mode
-        label.textColor = [UIColor whiteColor];
-    }
     [footer addSubview:label];
     self.tableView.tableFooterView = footer;
 }
@@ -116,13 +112,9 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    Batchomatic *bm = [Batchomatic sharedInstance];
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:22];
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
-    if (bm.packageManager == 2) {
-        cell.textLabel.textColor = [UIColor whiteColor];
-    }
     
     if (indexPath.section == 0) { //top section
         NSArray *cellTitles = @[@"Create online .deb", @"Create offline .deb", @"Install .deb"];

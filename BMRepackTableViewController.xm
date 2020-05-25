@@ -30,10 +30,6 @@
     else {
         spinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     }
-    Batchomatic *bm = [Batchomatic sharedInstance];
-    if (bm.packageManager == 2) {
-        spinner.color = [UIColor colorWithRed:0.557 green:0.557 blue:0.576 alpha:1];
-    }
     
     spinner.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin); //center the UIActivityIndicator
     CGFloat height = (CGRectGetHeight(self.view.bounds) / 2) - self.navigationController.navigationBar.frame.size.height;
