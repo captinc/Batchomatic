@@ -477,7 +477,7 @@ int refreshesCompleted = 0;
     if (self.packageManager == 1) { //Cydia
         refreshesCompleted = 1;
         NSArray *allRepos = [[[%c(Database) sharedInstance] sources] copy];
-        NSArray *cannotBeRemoved = @[@"http://apt.bingner.com/", @"https://apt.bingner.com/", @"https://checkra.in/assets/mobilesubstrate/", @"https://diatr.us/apt/"];
+        NSArray *cannotBeRemoved = @[@"http://apt.bingner.com/", @"https://apt.bingner.com/", @"https://diatr.us/apt/"];
         for (int x = 0; x < [allRepos count]; x++) {
             NSString *url = [(Source *)[allRepos objectAtIndex:x] rooturi];
             if ([cannotBeRemoved containsObject:url]) {
@@ -509,7 +509,7 @@ int refreshesCompleted = 0;
     else if (self.packageManager == 3) { //Sileo
         refreshesCompleted = 1;
         NSArray *allRepos = [[%c(_TtC5Sileo11RepoManager) shared] repoList];
-        NSArray *cannotBeRemoved = @[@"https://repo.chimera.sh/", @"https://checkra.in/assets/mobilesubstrate/", @"https://diatr.us/dark/", @"https://diatr.us/sileodark/", @"https://diatr.us/apt/"];
+        NSArray *cannotBeRemoved = @[@"https://repo.chimera.sh/", @"https://diatr.us/dark/", @"https://diatr.us/sileodark/", @"https://diatr.us/apt/"];
         for (int x = 0; x < [allRepos count]; x++) {
             NSString *url = [(_TtC5Sileo4Repo *)[allRepos objectAtIndex:x] repoURL];
             if ([cannotBeRemoved containsObject:url]) {

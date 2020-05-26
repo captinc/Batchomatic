@@ -15,7 +15,6 @@ addUtilityRepos () {
         fi
     elif [ `ls -a /etc/apt/preferences.d/ | grep checkra1n` ]; then
         echo "https://apt.bingner.com/" >> /tmp/batchomatic/wantedReposRaw.txt
-        echo "https://checkra.in/assets/mobilesubstrate/" >> /tmp/batchomatic/wantedReposRaw.txt
     fi
 }
 
