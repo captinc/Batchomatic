@@ -1,3 +1,11 @@
+//
+//  BMHomeTableViewController.h
+//  Headers
+//  
+//  Created by Capt Inc on 2020-05-31
+//  Copyright © 2020 Capt Inc. All rights reserved.
+//
+
 @interface BMHomeTableViewController : UITableViewController
 - (NSString *)versionNumber;
 - (void)viewDidLoad;

@@ -1,6 +1,15 @@
+//
+//  Batchomatic.xm
+//  Batchomatic
+//  
+//  Created by Capt Inc on 2020-06-01
+//  Copyright © 2020 Capt Inc. All rights reserved.
+//
+
 #import "Headers/Batchomatic.h"
 #import "Headers/BMHomeTableViewController.h"
 #import "Headers/NSTask.h"
+
 // This variable tells my tweak if we are currently adding repos so it can
 // detect when adding repos is finished. Because it needs to survive Batchomatic
 // dismissed & reopened, it must be a global extern C variable instead of an @property

@@ -1,3 +1,11 @@
+//
+//  Tweak.h
+//  Headers
+//  
+//  Created by Capt Inc on 2020-05-31
+//  Copyright © 2020 Capt Inc. All rights reserved.
+//
+
 // Cydia
 @interface SearchController : UIViewController
 - (void)viewDidLoad;
