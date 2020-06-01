@@ -24,16 +24,16 @@ mkdir /tmp/batchomatic
 cp /var/mobile/BatchInstall/repos.txt /tmp/batchomatic/wantedReposRaw.txt
 
 if [ "$1" = 1 ]; then
-    cat /etc/apt/sources.list.d/*.list >> /tmp/batchomatic/reposRaw.txt || true
-    cat /etc/apt/cydiasources.d/*.list >> /tmp/batchomatic/reposRaw.txt || true
+    cat /etc/apt/sources.list.d/*.list >> /tmp/batchomatic/reposRaw.txt || YES
+    cat /etc/apt/cydiasources.d/*.list >> /tmp/batchomatic/reposRaw.txt || YES
 elif [ "$1" = 2 ]; then
-    cat "/var/mobile/Library/Application Support/xyz.willy.Zebra/sources.list" >> /tmp/batchomatic/reposRaw.txt || true
+    cat "/var/mobile/Library/Application Support/xyz.willy.Zebra/sources.list" >> /tmp/batchomatic/reposRaw.txt || YES
     addUtilityRepos
 elif [ "$1" = 3 ]; then
-    cat /etc/apt/sources.list.d/*.sources >> /tmp/batchomatic/reposRaw.txt || true
+    cat /etc/apt/sources.list.d/*.sources >> /tmp/batchomatic/reposRaw.txt || YES
     addUtilityRepos
 elif [ "$1" = 4 ]; then
-    ls "/var/mobile/Library/Application Support/Installer/SourcesFiles" | sed 's:_:/:g' | sed 's:\(.*\)-Packages:\1:' >> /tmp/batchomatic/reposWithSlash.txt || true
+    ls "/var/mobile/Library/Application Support/Installer/SourcesFiles" | sed 's:_:/:g' | sed 's:\(.*\)-Packages:\1:' >> /tmp/batchomatic/reposWithSlash.txt || YES
     addUtilityRepos
 fi
 

@@ -178,12 +178,12 @@ int refreshesCompleted = 0;
         return;
     }
     if (self.tweaksSwitchStatus) {
-        [self processingReposDidFinish:true];
+        [self processingReposDidFinish:YES];
         return;
     }
     [self endProcessingDialog:@"Done! Succesfully installed your .deb!"
-        transition:true
-        shouldOpenBMHomeViewControllerFirst:false
+        transition:YES
+        shouldOpenBMHomeViewControllerFirst:NO
     ];
 }
 
@@ -300,7 +300,7 @@ int refreshesCompleted = 0;
         else if (self.packageManager == 4) {
             while (!feof(listOfReposFile)) {
                 NSString *eachRepo = [self readEachLineOfFile:listOfReposFile];
-                [self.installer_ManageViewController addSourceWithString:eachRepo withHttpApproval:true];
+                [self.installer_ManageViewController addSourceWithString:eachRepo withHttpApproval:YES];
             }
             
             [self.processingDialog dismissViewControllerAnimated:YES completion:^{
@@ -313,7 +313,7 @@ int refreshesCompleted = 0;
         }
     }
     else {
-        [self processingReposDidFinish:true];
+        [self processingReposDidFinish:YES];
     }
     fclose(listOfReposFile);
     [self runCommand:@"bmd rmtemp"];
@@ -325,10 +325,10 @@ int refreshesCompleted = 0;
     refreshesCompleted = 0;
     // this means the package manager finished removing repos
     if (self.isRemovingRepos) {
-        self.isRemovingRepos = false;
+        self.isRemovingRepos = NO;
         [self endProcessingDialog:@"Done! Succesfully removed all repos!"
             transition:shouldTransition
-            shouldOpenBMHomeViewControllerFirst:false
+            shouldOpenBMHomeViewControllerFirst:NO
         ];
     }
     // this means the package manager finished adding repos
@@ -340,9 +340,9 @@ int refreshesCompleted = 0;
             }
             else {
                 [self showProcessingDialog:@"Queuing tweaks...."
-                    includeStage:true
+                    includeStage:YES
                     startingStep:(self.currentStep + 1)
-                    autoPresent:false
+                    autoPresent:NO
                 ];
                 [self.motherClass presentViewController:self.processingDialog animated:YES completion:^{
                     [self queueTweaks:shouldTransition];
@@ -461,7 +461,7 @@ int refreshesCompleted = 0;
             }
         }
         
-        [[%c(_TtC5Sileo15DownloadManager) shared] reloadDataWithRecheckPackages:true];
+        [[%c(_TtC5Sileo15DownloadManager) shared] reloadDataWithRecheckPackages:YES];
         // dispatch_after is necessary because Sileo takes a few seconds to update the amount of dependency errors
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             // see "- (void)sileoFixDependencies" for an explanation about this
@@ -500,7 +500,7 @@ int refreshesCompleted = 0;
         [self.bm_BMInstallTableViewController dismissViewControllerAnimated:YES completion:^{
             [self.bm_BMHomeTableViewController dismissViewControllerAnimated:YES completion:^{
                 // do method recursion because I like code-reuse
-                [self openQueueForCurrentPackageManager:false];
+                [self openQueueForCurrentPackageManager:NO];
             }];
         }];
     }
@@ -527,7 +527,7 @@ int refreshesCompleted = 0;
 // dependencies to the queue, and then re-check via method recursion
 - (void)sileoFixDependencies:(NSMutableString *)unfindableTweaks transition:(BOOL)shouldTransition {
     [self sileoAddDependenciesToQueue];
-    [[%c(_TtC5Sileo15DownloadManager) shared] reloadDataWithRecheckPackages:true];
+    [[%c(_TtC5Sileo15DownloadManager) shared] reloadDataWithRecheckPackages:YES];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         if ([[[%c(_TtC5Sileo15DownloadManager) shared] errors] count] != 0) {
             // method recursion
@@ -597,7 +597,7 @@ int refreshesCompleted = 0;
 
 // Removes all currently-added repos from the current package manager
 - (void)removeAllRepos {
-    self.isRemovingRepos = true;
+    self.isRemovingRepos = YES;
     NSMutableArray *ignoredRepos = [[NSMutableArray alloc] init];
     FILE *ignoredReposFile = fopen("/Library/Batchomatic/ignoredrepos.txt", "r");
     while (!feof(ignoredReposFile)) {
@@ -700,7 +700,7 @@ int refreshesCompleted = 0;
             }
             [(ATRSources *)[[%c(ATRPackageManager) sharedPackageManager] sources] removeSourceWithLocation:url];
         }
-        [self processingReposDidFinish:true];
+        [self processingReposDidFinish:YES];
     }
 }
 
@@ -764,7 +764,7 @@ int refreshesCompleted = 0;
             }
         }
         
-        [[%c(_TtC5Sileo15DownloadManager) shared] reloadDataWithRecheckPackages:true];
+        [[%c(_TtC5Sileo15DownloadManager) shared] reloadDataWithRecheckPackages:YES];
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self.processingDialog dismissViewControllerAnimated:YES completion:^{
                 [self.bm_BMHomeTableViewController dismissViewControllerAnimated:YES completion:^{
@@ -885,7 +885,7 @@ int refreshesCompleted = 0;
     UIAlertAction *proceedAction = [UIAlertAction
         actionWithTitle:@"Proceed" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             if (self.uicacheSwitchStatus && !self.respringSwitchStatus) {
-                [self showProcessingDialog:@"Running uicache...." includeStage:false startingStep:1 autoPresent:true];
+                [self showProcessingDialog:@"Running uicache...." includeStage:NO startingStep:1 autoPresent:YES];
                 [self runCommand:@"uicache --all"];
                 
                 [self transitionProgressMessage:@"Done!"];
@@ -906,7 +906,7 @@ int refreshesCompleted = 0;
             
             else if (self.uicacheSwitchStatus && self.respringSwitchStatus) {
                 NSString *dialog = @"Running uicache and respringing....";
-                [self showProcessingDialog:dialog includeStage:false startingStep:1 autoPresent:true];
+                [self showProcessingDialog:dialog includeStage:NO startingStep:1 autoPresent:YES];
                 [self runCommand:@"uicache --all --respring"];
             }
             
@@ -1030,19 +1030,19 @@ int refreshesCompleted = 0;
     // type 1 means the remove all repos screen
     if (type == 1) {
         [combinedStackView addArrangedSubview:[self createASwitchWithLabel:@"Remove everything?" tag:101 defaultState:NO]];
-        self.removeAllReposSwitchStatus = false;
+        self.removeAllReposSwitchStatus = NO;
     }
     // type 2 is the remove all tweaks screen
     else if (type == 2) {
         [combinedStackView addArrangedSubview:[self createASwitchWithLabel:@"Remove everything?" tag:102 defaultState:NO]];
-        self.removeAllTweaksSwitchStatus = false;
+        self.removeAllTweaksSwitchStatus = NO;
     }
     // type 3 is the respring/uicache screen
     else {
         [combinedStackView addArrangedSubview:[self createASwitchWithLabel:@"Run uicache" tag:103 defaultState:NO]];
         [combinedStackView addArrangedSubview:[self createASwitchWithLabel:@"Respring" tag:104 defaultState:YES]];
-        self.uicacheSwitchStatus = false;
-        self.respringSwitchStatus = true;
+        self.uicacheSwitchStatus = NO;
+        self.respringSwitchStatus = YES;
     }
     return combinedStackView;
 }
@@ -1082,44 +1082,44 @@ int refreshesCompleted = 0;
     // sorry about this terrible formatting. I figured that with such
     // repetitive code, less lines would make it easier to read. idk
     if (sender.tag == 0) {
-        if ([sender isOn]) { self.prefsSwitchStatus = true; }
-        else {               self.prefsSwitchStatus = false; }
+        if ([sender isOn]) { self.prefsSwitchStatus = YES; }
+        else {               self.prefsSwitchStatus = NO; }
     }
     else if (sender.tag == 1) {
-        if ([sender isOn]) { self.hostsSwitchStatus = true; }
-        else {               self.hostsSwitchStatus = false; }
+        if ([sender isOn]) { self.hostsSwitchStatus = YES; }
+        else {               self.hostsSwitchStatus = NO; }
     }
     else if (sender.tag == 2) {
-        if ([sender isOn]) { self.savedDebsSwitchStatus = true; }
-        else {               self.savedDebsSwitchStatus = false; }
+        if ([sender isOn]) { self.savedDebsSwitchStatus = YES; }
+        else {               self.savedDebsSwitchStatus = NO; }
     }
     else if (sender.tag == 3) {
-        if ([sender isOn]) { self.reposSwitchStatus = true; }
-        else {               self.reposSwitchStatus = false; }
+        if ([sender isOn]) { self.reposSwitchStatus = YES; }
+        else {               self.reposSwitchStatus = NO; }
     }
     else if (sender.tag == 4) {
-        if ([sender isOn]) { self.tweaksSwitchStatus = true; }
-        else {               self.tweaksSwitchStatus = false; }
+        if ([sender isOn]) { self.tweaksSwitchStatus = YES; }
+        else {               self.tweaksSwitchStatus = NO; }
     }
     else if (sender.tag == 5) {
-        if ([sender isOn]) { self.offlineTweaksSwitchStatus = true; }
-        else {               self.offlineTweaksSwitchStatus = false; }
+        if ([sender isOn]) { self.offlineTweaksSwitchStatus = YES; }
+        else {               self.offlineTweaksSwitchStatus = NO; }
     }
     else if (sender.tag == 101) {
-        if ([sender isOn]) { self.removeAllReposSwitchStatus = true; }
-        else {               self.removeAllReposSwitchStatus = false; }
+        if ([sender isOn]) { self.removeAllReposSwitchStatus = YES; }
+        else {               self.removeAllReposSwitchStatus = NO; }
     }
     else if (sender.tag == 102) {
-        if ([sender isOn]) { self.removeAllTweaksSwitchStatus = true; }
-        else {               self.removeAllTweaksSwitchStatus = false; }
+        if ([sender isOn]) { self.removeAllTweaksSwitchStatus = YES; }
+        else {               self.removeAllTweaksSwitchStatus = NO; }
     }
     else if (sender.tag == 103) {
-        if ([sender isOn]) { self.uicacheSwitchStatus = true; }
-        else {               self.uicacheSwitchStatus = false; }
+        if ([sender isOn]) { self.uicacheSwitchStatus = YES; }
+        else {               self.uicacheSwitchStatus = NO; }
     }
     else if (sender.tag == 104) {
-        if ([sender isOn]) { self.respringSwitchStatus = true; }
-        else {               self.respringSwitchStatus = false; }
+        if ([sender isOn]) { self.respringSwitchStatus = YES; }
+        else {               self.respringSwitchStatus = NO; }
     }
 }
 
@@ -1129,19 +1129,19 @@ int refreshesCompleted = 0;
 - (void)determineInfoAboutDeb {
     // determine if the user's .deb is currently installed
     if ([[self runCommand:@"dpkg -l | grep \"com.you.batchinstall\""] isEqualToString:@""]) {
-        self.debIsInstalled = false;
+        self.debIsInstalled = NO;
     }
     else {
-        self.debIsInstalled = true;
+        self.debIsInstalled = YES;
     }
     
     BOOL isFolder;
     // determine if the currently installed .deb is meant for online mode or offline mode
     if ([[NSFileManager defaultManager] fileExistsAtPath:@"/var/mobile/BatchInstall/OfflineDebs" isDirectory:&isFolder]) {
-        self.debIsOnline = false;
+        self.debIsOnline = NO;
     }
     else {
-        self.debIsOnline = true;
+        self.debIsOnline = YES;
     }
 }
 

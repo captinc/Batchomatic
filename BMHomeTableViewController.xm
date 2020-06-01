@@ -204,7 +204,7 @@
         typeOfDebMsg = @"Creating your offline .deb....\n";
     }
     
-    NSString *motherMessage = [bm showProcessingDialog:typeOfDebMsg includeStage:true startingStep:1 autoPresent:false];
+    NSString *motherMessage = [bm showProcessingDialog:typeOfDebMsg includeStage:YES startingStep:1 autoPresent:NO];
     [self presentViewController:bm.processingDialog animated:YES completion:^{
         [bm createDeb:type withMotherMessage:motherMessage];
     }];
@@ -252,7 +252,7 @@
     
     UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Batchomatic" message:infoMsg preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *proceedAction = [UIAlertAction actionWithTitle:@"Proceed" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-        [bm showProcessingDialog:processingMsg includeStage:true startingStep:1 autoPresent:false];
+        [bm showProcessingDialog:processingMsg includeStage:YES startingStep:1 autoPresent:NO];
         [bm.bm_BMHomeTableViewController presentViewController:bm.processingDialog animated:YES completion:^{
             if (type == 1) {
                 [bm removeAllRepos];
@@ -271,7 +271,7 @@
 }
 
 - (void)didTapRespringButton {
-    [[Batchomatic sharedInstance] endProcessingDialog:nil transition:false shouldOpenBMHomeViewControllerFirst:false];
+    [[Batchomatic sharedInstance] endProcessingDialog:nil transition:NO shouldOpenBMHomeViewControllerFirst:NO];
 }
 
 - (void)didTapBackButton {

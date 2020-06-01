@@ -2,6 +2,6 @@
 <plist version="1.0">
     <dict>
         <key>platform-application</key>
-        <true/>
+        <YES/>
     </dict>
 </plist>

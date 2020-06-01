@@ -105,7 +105,7 @@
     Batchomatic *bm = [Batchomatic sharedInstance];
     bm.maxSteps = 1;
     NSString *msg = [NSString stringWithFormat:@"Repacking tweak to .deb....\n%@", packageID];
-    [bm showProcessingDialog:msg includeStage:true startingStep:1 autoPresent:false];
+    [bm showProcessingDialog:msg includeStage:YES startingStep:1 autoPresent:NO];
     [self presentViewController:bm.processingDialog animated:YES completion:^{
         [bm repackTweakWithIdentifier:packageID];
     }];

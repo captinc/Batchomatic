@@ -33,9 +33,9 @@ extern int refreshesCompleted;
         refreshesCompleted = 2;
     }
     else if (refreshesCompleted == 2) {
-        // Pass true/false for whether or not we should transition
+        // Pass YES/NO for whether or not we should transition
         // the existing processing dialog or make a new one
-        [[Batchomatic sharedInstance] processingReposDidFinish:true];
+        [[Batchomatic sharedInstance] processingReposDidFinish:YES];
     }
 }
 
@@ -78,8 +78,8 @@ extern int refreshesCompleted;
     %orig;
     if (refreshesCompleted != 0) {
         // Zebra displays a pop-up when adding repos, which dismisses my UIAlertController.
-        // So, we need to create a new UIAlertController by passing 'false'
-        [[Batchomatic sharedInstance] processingReposDidFinish:false];
+        // So, we need to create a new UIAlertController by passing 'NO'
+        [[Batchomatic sharedInstance] processingReposDidFinish:NO];
     }
 }
 %end
@@ -90,7 +90,7 @@ extern int refreshesCompleted;
     %orig;
     Batchomatic *bm = [Batchomatic sharedInstance];
     if (bm.isRemovingRepos) {
-        [bm processingReposDidFinish:true];
+        [bm processingReposDidFinish:YES];
     }
 }
 %end
@@ -131,7 +131,7 @@ extern int refreshesCompleted;
     if (refreshesCompleted != 0 && bm.packageManager == 3 && [NSStringFromClass(self.superview.class) length] == 0) {
         // Dispatch_after is necessary because Sileo takes a few seconds to update what tweaks are in the queue
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [bm processingReposDidFinish:true];
+            [bm processingReposDidFinish:YES];
         });
     }
 }
@@ -161,7 +161,7 @@ extern int refreshesCompleted;
 - (void)viewWillDisappear:(BOOL)animated {
     %orig;
     if (refreshesCompleted != 0) {
-        [[Batchomatic sharedInstance] processingReposDidFinish:false];
+        [[Batchomatic sharedInstance] processingReposDidFinish:NO];
     }
 }
 %end

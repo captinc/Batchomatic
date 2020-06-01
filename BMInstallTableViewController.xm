@@ -68,21 +68,21 @@
         UISwitch *toggle = [[UISwitch alloc] initWithFrame:CGRectZero];
         toggle.tag = indexPath.row;
         [toggle setOn:YES animated:YES];
-        bm.prefsSwitchStatus = true;
-        bm.hostsSwitchStatus = true;
-        bm.savedDebsSwitchStatus = true;
+        bm.prefsSwitchStatus = YES;
+        bm.hostsSwitchStatus = YES;
+        bm.savedDebsSwitchStatus = YES;
         
         // if the .deb is online mode, the offline switch gets greyed out
         if (bm.debIsOnline) {
             if (indexPath.row == 3 || indexPath.row == 4) {
                 [toggle setOn:YES animated:YES];
-                bm.reposSwitchStatus = true;
-                bm.tweaksSwitchStatus = true;
+                bm.reposSwitchStatus = YES;
+                bm.tweaksSwitchStatus = YES;
             }
             if (indexPath.row == 5) {
                 // turn the switch off
                 [toggle setOn:NO animated:YES];
-                bm.offlineTweaksSwitchStatus = false;
+                bm.offlineTweaksSwitchStatus = NO;
                 // grey out the switch
                 toggle.enabled = NO;
                 // grey out the label
@@ -94,15 +94,15 @@
         else {
             if (indexPath.row == 3 || indexPath.row == 4) {
                 [toggle setOn:NO animated:YES];
-                bm.reposSwitchStatus = false;
-                bm.tweaksSwitchStatus = false;
+                bm.reposSwitchStatus = NO;
+                bm.tweaksSwitchStatus = NO;
                 toggle.enabled = NO;
                 cell.textLabel.alpha = 0.439216f;
                 cell.userInteractionEnabled = NO;
             }
             if (indexPath.row == 5) {
                 [toggle setOn:YES animated:YES];
-                bm.offlineTweaksSwitchStatus = true;
+                bm.offlineTweaksSwitchStatus = YES;
             }
         }
         
@@ -136,7 +136,7 @@
     Batchomatic *bm = [Batchomatic sharedInstance];
     // must do some prep work before actually installing the .deb
     [bm calculateMaxStepsForInstalling];
-    [bm showProcessingDialog:@"Preparing...." includeStage:true startingStep:0 autoPresent:false];
+    [bm showProcessingDialog:@"Preparing...." includeStage:YES startingStep:0 autoPresent:NO];
     [self presentViewController:bm.processingDialog animated:YES completion:^{
         [bm installDeb];
     }];
