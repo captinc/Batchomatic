@@ -8,8 +8,6 @@
 
 @interface BMRepackTableViewController : UITableViewController
 @property UIActivityIndicatorView *spinner;
-- (void)viewDidLoad;
-- (void)viewWillAppear:(BOOL)animated;
 
 - (void)placeActivityIndicator;
 - (void)createTableView;

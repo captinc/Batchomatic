@@ -8,8 +8,6 @@
 
 @interface BMHomeTableViewController : UITableViewController
 - (NSString *)versionNumber;
-- (void)viewDidLoad;
-- (void)viewWillAppear:(BOOL)animated;
 
 - (void)createNavBar;
 - (void)createTableView;
@@ -29,6 +27,4 @@
 - (void)didTapRespringButton;
 - (void)didTapBackButton;
 - (void)didTapHelpButton;
-
-- (void)dealloc;
 @end

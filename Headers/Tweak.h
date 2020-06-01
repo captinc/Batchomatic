@@ -8,7 +8,6 @@
 
 // Cydia
 @interface SearchController : UIViewController
-- (void)viewDidLoad;
 - (void)startBatchomatic;
 @end
 
@@ -46,7 +45,6 @@
 //--------------------------------------------------------------------------------------------------------------------------
 // Zebra
 @interface ZBSearchViewController : UITableViewController
-- (void)viewDidLoad;
 - (void)startBatchomatic;
 @end
 
@@ -104,7 +102,6 @@ typedef enum {
 //--------------------------------------------------------------------------------------------------------------------------
 // Sileo
 @interface _TtC5Sileo25PackageListViewController : UIViewController
-- (void)viewDidLoad;
 - (void)startBatchomatic;
 @end
 
@@ -148,7 +145,6 @@ typedef enum {
 //--------------------------------------------------------------------------------------------------------------------------
 // Installer
 @interface SearchViewController : UIViewController
-- (void)viewDidLoad;
 - (void)startBatchomatic;
 @end
 

@@ -7,8 +7,6 @@
 //
 
 @interface BMInstallTableViewController : UITableViewController
-- (void)viewDidLoad;
-- (void)viewWillAppear:(BOOL)animated;
 
 - (void)createTableView;
 
