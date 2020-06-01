@@ -9,7 +9,7 @@
 - (void)_loaded;
 - (void)addSource:(NSDictionary *)dictionary;
 - (BOOL)addTrivialSource:(NSString *)href;
-- (bool)requestUpdate;
+- (BOOL)requestUpdate;
 - (void)resolve;
 - (void)queue;
 @end
@@ -129,7 +129,7 @@ typedef enum {
 @property (nonatomic, copy) NSArray *installations;
 + (instancetype)shared;
 - (void)addWithPackage:(_TtC5Sileo7Package *)thePackage queue:(int)typeOfQueue;
-- (void)reloadDataWithRecheckPackages:(bool)recheck;
+- (void)reloadDataWithRecheckPackages:(BOOL)recheck;
 @end
 
 @interface TabBarController : UITabBarController
@@ -145,7 +145,7 @@ typedef enum {
 @end
 
 @interface ManageViewController : UIViewController
-- (void)addSourceWithString:(NSString *)repoURL withHttpApproval:(bool)approval;
+- (void)addSourceWithString:(NSString *)repoURL withHttpApproval:(BOOL)approval;
 @end
 
 @interface ATTabBarController : UITabBarController
@@ -162,7 +162,7 @@ typedef enum {
 
 @interface ATRPackages : NSObject
 - (ATRPackage *)packageWithIdentifier:(NSString *)packageIdentifier;
-- (bool)packageIsInstalled:(NSString *)packageIdentifier;
+- (BOOL)packageIsInstalled:(NSString *)packageIdentifier;
 - (void)setPackage:(NSString *)packageIdentifier inTheQueue:(BOOL)queue versionToQueue:(NSString *)version operation:(NSUInteger)operation;
 @end
 

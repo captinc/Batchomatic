@@ -321,7 +321,7 @@ int refreshesCompleted = 0;
 
 // After each package manager finishes adding repos,
 // this method is called to continue running Batchomatic
-- (void)processingReposDidFinish:(bool)shouldTransition {
+- (void)processingReposDidFinish:(BOOL)shouldTransition {
     refreshesCompleted = 0;
     // this means the package manager finished removing repos
     if (self.isRemovingRepos) {
@@ -361,7 +361,7 @@ int refreshesCompleted = 0;
 // Displays an alert if we cannot find some of the user's tweaks.
 // This is caused when the repo for said tweak is not added, or said tweak
 // was previously installed from a .deb. We obviously can't queue a tweak if we can't find it
-- (void)showUnfindableTweaks:(NSMutableString *)unfindableTweaks transition:(bool)shouldTransition {
+- (void)showUnfindableTweaks:(NSMutableString *)unfindableTweaks transition:(BOOL)shouldTransition {
     if ([unfindableTweaks isEqualToString:@""]) {
         [self.processingDialog dismissViewControllerAnimated:YES completion:^{
             [self openQueueForCurrentPackageManager:shouldTransition];
@@ -393,7 +393,7 @@ int refreshesCompleted = 0;
 }
 
 // Adds all of the user's tweaks to the queue if they are not already installed
-- (void)queueTweaks:(bool)shouldTransition {
+- (void)queueTweaks:(BOOL)shouldTransition {
     NSMutableString *unfindableTweaks = [[NSMutableString alloc] init];
     FILE *listOfTweaksFile = fopen("/var/mobile/BatchInstall/tweaks.txt", "r");
     
@@ -495,7 +495,7 @@ int refreshesCompleted = 0;
 }
 
 // Opens the install queue for the current package manager
-- (void)openQueueForCurrentPackageManager:(bool)shouldTransition {
+- (void)openQueueForCurrentPackageManager:(BOOL)shouldTransition {
     if (shouldTransition) {
         [self.bm_BMInstallTableViewController dismissViewControllerAnimated:YES completion:^{
             [self.bm_BMHomeTableViewController dismissViewControllerAnimated:YES completion:^{
@@ -525,7 +525,7 @@ int refreshesCompleted = 0;
 
 // In Sileo, check for any current dependency errors, add those
 // dependencies to the queue, and then re-check via method recursion
-- (void)sileoFixDependencies:(NSMutableString *)unfindableTweaks transition:(bool)shouldTransition {
+- (void)sileoFixDependencies:(NSMutableString *)unfindableTweaks transition:(BOOL)shouldTransition {
     [self sileoAddDependenciesToQueue];
     [[%c(_TtC5Sileo15DownloadManager) shared] reloadDataWithRecheckPackages:true];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2.0*NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -800,9 +800,9 @@ int refreshesCompleted = 0;
 // Displays a UIAlertController with stages (for example: "Stage
 // 1/4"), what we are doing, and a UIActivityIndicator/spinning wheel
 - (NSString *)showProcessingDialog:(NSString *)wordMessage
-                      includeStage:(bool)includeStage
+                      includeStage:(BOOL)includeStage
                       startingStep:(int)startingStep
-                       autoPresent:(bool)shouldAutoPresentDialog {
+                       autoPresent:(BOOL)shouldAutoPresentDialog {
     NSString *totalMessage;
     if (includeStage) {
         self.currentStep = startingStep;
@@ -880,8 +880,8 @@ int refreshesCompleted = 0;
 // Removes the UIActivityIndicator, transitions the text, and asks
 // the user if they want to uicache/respring. This method can either
 // present a whole new UIAlertController or transition an existing one
-- (void)endProcessingDialog:(NSString *)theMessage transition:(bool)shouldTransition
-                          shouldOpenBMHomeViewControllerFirst:(bool)shouldOpenBMHomeViewControllerFirst {
+- (void)endProcessingDialog:(NSString *)theMessage transition:(BOOL)shouldTransition
+                          shouldOpenBMHomeViewControllerFirst:(BOOL)shouldOpenBMHomeViewControllerFirst {
     UIAlertAction *proceedAction = [UIAlertAction
         actionWithTitle:@"Proceed" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             if (self.uicacheSwitchStatus == true && self.respringSwitchStatus == false) {
@@ -998,7 +998,7 @@ int refreshesCompleted = 0;
 // methods to handle my special tweak preferences (asking the user
 // what they want to do for installing a .deb, removing all tweaks/repos, and uicache/respringing)
 // Creates a UIStackView with a UISwitch and a UILabel.
-// The status of the switch is stored in the boolean variables prefsSwitchStatus, tweaksSwitchStatus, etc.
+// The status of the switch is stored in the BOOLean variables prefsSwitchStatus, tweaksSwitchStatus, etc.
 - (UIStackView *)createASwitchWithLabel:(NSString *)message tag:(int)theTag defaultState:(BOOL)onOrOff {
     UILabel *theLabel = [[UILabel alloc] init];
     theLabel.text = message;

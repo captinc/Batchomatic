@@ -106,7 +106,7 @@
             }
         }
         
-        [toggle addTarget:bm action:@selector(toggleTapped:) forControlEvents:UIControlEventValueChanged]; //"- (void)toggleTapped:" will update the corresponding boolean variable whenever the switch is tapped
+        [toggle addTarget:bm action:@selector(toggleTapped:) forControlEvents:UIControlEventValueChanged]; //"- (void)toggleTapped:" will update the corresponding BOOLean variable whenever the switch is tapped
         cell.accessoryView = toggle;
     }
     // customizes the "Proceed" button/row

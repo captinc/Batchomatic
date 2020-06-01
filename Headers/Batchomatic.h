@@ -16,21 +16,21 @@
 @property (nonatomic) ATTabBarController *installer_ATTabBarController;
 @property (nonatomic) ManageViewController *installer_ManageViewController;
 
-@property (nonatomic) bool prefsSwitchStatus;
-@property (nonatomic) bool savedDebsSwitchStatus;
-@property (nonatomic) bool hostsSwitchStatus;
-@property (nonatomic) bool reposSwitchStatus;
-@property (nonatomic) bool tweaksSwitchStatus;
-@property (nonatomic) bool offlineTweaksSwitchStatus;
-@property (nonatomic) bool uicacheSwitchStatus;
-@property (nonatomic) bool respringSwitchStatus;
-@property (nonatomic) bool removeAllReposSwitchStatus;
-@property (nonatomic) bool removeAllTweaksSwitchStatus;
+@property (nonatomic) BOOL prefsSwitchStatus;
+@property (nonatomic) BOOL savedDebsSwitchStatus;
+@property (nonatomic) BOOL hostsSwitchStatus;
+@property (nonatomic) BOOL reposSwitchStatus;
+@property (nonatomic) BOOL tweaksSwitchStatus;
+@property (nonatomic) BOOL offlineTweaksSwitchStatus;
+@property (nonatomic) BOOL uicacheSwitchStatus;
+@property (nonatomic) BOOL respringSwitchStatus;
+@property (nonatomic) BOOL removeAllReposSwitchStatus;
+@property (nonatomic) BOOL removeAllTweaksSwitchStatus;
 
 @property (nonatomic) int packageManager;
-@property (nonatomic) bool isRemovingRepos;
-@property (nonatomic) bool debIsInstalled;
-@property (nonatomic) bool debIsOnline;
+@property (nonatomic) BOOL isRemovingRepos;
+@property (nonatomic) BOOL debIsInstalled;
+@property (nonatomic) BOOL debIsOnline;
 @property (nonatomic) NSArray *currentlyInstalledTweaks;
 
 @property (nonatomic) UIAlertController *processingDialog;
@@ -48,12 +48,12 @@
 
 - (void)installAllDebsInFolder:(NSString *)pathToDebsFolder withMotherMessage:(NSString *)motherMessage;
 - (void)addRepos;
-- (void)processingReposDidFinish:(bool)shouldTransition;
-- (void)showUnfindableTweaks:(NSMutableString *)unfindableTweaks transition:(bool)shouldTransition;
-- (void)queueTweaks:(bool)shouldTransition;
-- (void)openQueueForCurrentPackageManager:(bool)shouldTransition;
+- (void)processingReposDidFinish:(BOOL)shouldTransition;
+- (void)showUnfindableTweaks:(NSMutableString *)unfindableTweaks transition:(BOOL)shouldTransition;
+- (void)queueTweaks:(BOOL)shouldTransition;
+- (void)openQueueForCurrentPackageManager:(BOOL)shouldTransition;
 
-- (void)sileoFixDependencies:(NSMutableString *)unfindableTweaks transition:(bool)shouldTransition;
+- (void)sileoFixDependencies:(NSMutableString *)unfindableTweaks transition:(BOOL)shouldTransition;
 - (void)sileoAddDependenciesToQueue;
 
 - (void)repackTweakWithIdentifier:(NSString *)packageID;
@@ -61,10 +61,10 @@
 - (void)removeAllRepos;
 - (void)removeAllTweaks;
 
-- (NSString *)showProcessingDialog:(NSString *)wordMessage includeStage:(bool)includeStage startingStep:(int)startingStep autoPresent:(bool)shouldAutoPresentDialog;
+- (NSString *)showProcessingDialog:(NSString *)wordMessage includeStage:(BOOL)includeStage startingStep:(int)startingStep autoPresent:(BOOL)shouldAutoPresentDialog;
 - (void)transitionProgressMessage:(NSString *)theMessage;
 - (NSString *)updateProgressMessage:(NSString *)wordMessage;
-- (void)endProcessingDialog:(NSString *)theMessage transition:(bool)shouldTransition shouldOpenBMHomeViewControllerFirst:(bool)shouldOpenBMHomeViewControllerFirst;
+- (void)endProcessingDialog:(NSString *)theMessage transition:(BOOL)shouldTransition shouldOpenBMHomeViewControllerFirst:(BOOL)shouldOpenBMHomeViewControllerFirst;
 - (void)showFinishedCreatingDialog:(NSString *)debFileName;
 
 - (UIStackView *)createASwitchWithLabel:(NSString *)message tag:(int)theTag defaultState:(BOOL)onOrOff;
