@@ -1,7 +1,7 @@
 #import "Headers/Batchomatic.h"
 #import "Headers/BMRepackTableViewController.h"
 
-@implementation BMRepackTableViewController //The Repack deb screen
+@implementation BMRepackTableViewController // The Repack deb screen
 - (void)viewDidLoad {
     [super viewDidLoad];
     Batchomatic *bm = [Batchomatic sharedInstance];
@@ -35,7 +35,8 @@
         spinner.color = [UIColor colorWithRed:0.557 green:0.557 blue:0.576 alpha:1];
     }
     
-    spinner.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin); //center the UIActivityIndicator
+    // center the UIActivityIndicator
+    spinner.autoresizingMask = (UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin);
     CGFloat height = (CGRectGetHeight(self.view.bounds) / 2) - self.navigationController.navigationBar.frame.size.height;
     spinner.center = CGPointMake(CGRectGetWidth(self.view.bounds) / 2, height);
     
@@ -59,7 +60,8 @@
     return [[Batchomatic sharedInstance].currentlyInstalledTweaks count];
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section { //Hide the cell separator lines of extraneous/unused cells
+// Hide the cell separator lines of extraneous/unused cells
+- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     return [[UIView alloc] init];
 }
 
@@ -67,7 +69,9 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
-    if (!cell || !cell.detailTextLabel) { //in order to make detailTextLabel work, you must check if cell is nil or if cell.detailTextLabel is nil
+    // in order to make detailTextLabel work, you must check if cell is nil or
+    // if cell.detailTextLabel is nil
+    if (!cell || !cell.detailTextLabel) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:cellIdentifier];
     }
     Batchomatic *bm = [Batchomatic sharedInstance];
@@ -75,7 +79,8 @@
     
     cell.textLabel.font = [UIFont systemFontOfSize:18];
     cell.detailTextLabel.font = [UIFont systemFontOfSize:12];
-    cell.detailTextLabel.textColor = [UIColor systemGrayColor]; //make the package ID text a light gray
+    // make the package ID text a light gray
+    cell.detailTextLabel.textColor = [UIColor systemGrayColor];
     if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
         cell.textLabel.textColor = [UIColor whiteColor];
         cell.detailTextLabel.textColor = [UIColor colorWithRed:0.557 green:0.557 blue:0.576 alpha:1];

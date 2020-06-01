@@ -4,7 +4,9 @@
 #import "../Headers/NSTask.h"
 #define FLAG_PLATFORMIZE (1 << 1)
 
-void fixSetuidForChimera() { //On Chimera, you have to do this fancy stuff to make yourself root (cannot simply do setuid() like unc0ver/checkra1n)
+// On Chimera, you have to do this fancy stuff to make yourself root
+// (cannot simply do setuid() like unc0ver/checkra1n)
+void fixSetuidForChimera() {
     void *handle = dlopen("/usr/lib/libjailbreak.dylib", RTLD_LAZY);
     if (!handle) {
         return;
@@ -34,20 +36,25 @@ void fixSetuidForChimera() { //On Chimera, you have to do this fancy stuff to ma
     setgid(0);
 }
 
-int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the commands below and run it as root. Hardcoding commands instead of passing a command in the arguments is a safer and better practice
+// Allows you to pick one of the commands below and run
+// it as root. Hardcoding commands instead of passing a
+// command in the arguments is a safer and better practice
+int main(int argc, char *argv[], char *envp[]) {
     if (argc < 2) {
         printf("Error: you did not specify an option to run\n");
         return 1;
     }
     
-    setuid(0); //make us root
+    // make us root
+    setuid(0);
     if (getuid() != 0) {
         fixSetuidForChimera();
     }
     
     NSTask *task = [[NSTask alloc] init];
     NSMutableArray *args = [[NSMutableArray alloc] init];
-    if (!strcmp(argv[1], "rmtemp")) { //misc utilities
+    // misc utilities
+    if (!strcmp(argv[1], "rmtemp")) {
         [task setLaunchPath:@"/bin/rm"];
         [args addObject:@"-r"];
         [args addObject:@"/tmp/batchomatic"];
@@ -65,7 +72,8 @@ int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the
         [args addObject:@"/var/mobile/BatchInstall/OfflineDebs"];
     }
     //--------------------------------------------------------------------------------------------------------------------------
-    else if (!strcmp(argv[1], "getlist")) { //loading a list of currently installed tweaks for the "Repack tweak to .deb" menu
+    // loading a list of currently installed tweaks for the "Repack tweak to .deb" menu
+    else if (!strcmp(argv[1], "getlist")) {
         [task setLaunchPath:@"/bin/bash"];
         [args addObject:@"/Library/Batchomatic/createonline.sh"];
         [args addObject:@"getlist"];
@@ -76,7 +84,8 @@ int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the
         [args addObject:@"/tmp/batchomaticGetList"];
     }
     //--------------------------------------------------------------------------------------------------------------------------
-    else if (!strcmp(argv[1], "deb")) { //creating a .deb of a single tweak
+    // creating a .deb of a single tweak
+    else if (!strcmp(argv[1], "deb")) {
         if (argc > 2) {
             [task setLaunchPath:@"/usr/bin/bmd"];
             [args addObject:@"rmtemp"];
@@ -97,7 +106,8 @@ int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the
         }
     }
     //--------------------------------------------------------------------------------------------------------------------------
-    else if (!strcmp(argv[1], "installprefs")) { //installing the .deb
+    // installing the .deb
+    else if (!strcmp(argv[1], "installprefs")) {
         [task setLaunchPath:@"/bin/cp"];
         [args addObject:@"-r"];
         [args addObject:@"/var/mobile/BatchInstall/Preferences/*"];
@@ -153,14 +163,16 @@ int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the
         [args addObject:[NSString stringWithFormat:@"%s", argv[2]]];
     }
     //--------------------------------------------------------------------------------------------------------------------------
-    else if (!strcmp(argv[1], "online")) { //running each stage of creating an online deb
+    // running each stage of creating an online deb
+    else if (!strcmp(argv[1], "online")) {
         if (!strcmp(argv[2], "all")) {
             [task setLaunchPath:@"/bin/bash"];
             [args addObject:@"/Library/Batchomatic/createonline.sh"];
             [args addObject:@"all"];
         }
         else {
-            char *p; //convert a string from argv[] to an int to verify that the user chose a valid step
+            // convert a string from argv[] to an int to verify that the user chose a valid step
+            char *p;
             errno = 0;
             long arg = strtol(argv[2], &p, 10);
             if (*p != '\0' || errno != 0) {
@@ -183,7 +195,8 @@ int main(int argc, char *argv[], char *envp[]) { //Allows you to pick one of the
         }
     }
     //--------------------------------------------------------------------------------------------------------------------------
-    else if (!strcmp(argv[1], "offline")) { //running each stage of creating an offline deb
+    // running each stage of creating an offline deb
+    else if (!strcmp(argv[1], "offline")) {
         if (!strcmp(argv[2], "all")) {
             [task setLaunchPath:@"/bin/bash"];
             [args addObject:@"/Library/Batchomatic/createoffline.sh"];
