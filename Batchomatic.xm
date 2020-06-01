@@ -125,25 +125,25 @@ int refreshesCompleted = 0;
 // user turned on. This method is only called when installing a .deb
 - (void)calculateMaxStepsForInstalling {
     self.maxSteps = 0;
-    if (self.prefsSwitchStatus == true) {
+    if (self.prefsSwitchStatus) {
         self.maxSteps++;
     }
-    if (self.savedDebsSwitchStatus == true) {
+    if (self.savedDebsSwitchStatus) {
         self.maxSteps++;
     }
-    if (self.hostsSwitchStatus == true) {
+    if (self.hostsSwitchStatus) {
         self.maxSteps++;
     }
     if (self.debIsOnline) {
-        if (self.reposSwitchStatus == true) {
+        if (self.reposSwitchStatus) {
             self.maxSteps++;
         }
-        if (self.tweaksSwitchStatus == true) {
+        if (self.tweaksSwitchStatus) {
             self.maxSteps++;
         }
     }
     else {
-        if (self.offlineTweaksSwitchStatus == true) {
+        if (self.offlineTweaksSwitchStatus) {
             self.maxSteps++;
         }
     }
@@ -153,31 +153,31 @@ int refreshesCompleted = 0;
 // A few other methods need to be called before calling this one.
 // See BMInstallTableViewController.xm for more info
 - (void)installDeb {
-    if (self.prefsSwitchStatus == true) {
+    if (self.prefsSwitchStatus) {
         [self updateProgressMessage:@"Installing preferences...."];
         [self runCommand:@"bmd installprefs"];
         [self runCommand:@"bmd installactivatorprefs"];
     }
-    if (self.hostsSwitchStatus == true) {
+    if (self.hostsSwitchStatus) {
         [self updateProgressMessage:@"Installing hosts...."];
         [self runCommand:@"bmd installhosts"];
     }
-    if (self.savedDebsSwitchStatus == true) {
+    if (self.savedDebsSwitchStatus) {
         NSString *motherMessage = [self updateProgressMessage:@"Installing saved .debs...."];
         [self runCommand:@"bmd chperms1"];
         [self installAllDebsInFolder:@"/var/mobile/BatchInstall/SavedDebs" withMotherMessage:motherMessage];
     }
-    if (self.offlineTweaksSwitchStatus == true) {
+    if (self.offlineTweaksSwitchStatus) {
         NSString *motherMessage = [self updateProgressMessage:@"Installing offline .debs...."];
         [self runCommand:@"bmd chperms2"];
         [self installAllDebsInFolder:@"/var/mobile/BatchInstall/OfflineDebs" withMotherMessage:motherMessage];
     }
-    if (self.reposSwitchStatus == true) {
+    if (self.reposSwitchStatus) {
         [self updateProgressMessage:@"Adding repos...."];
         [self addRepos];
         return;
     }
-    if (self.tweaksSwitchStatus == true) {
+    if (self.tweaksSwitchStatus) {
         [self processingReposDidFinish:true];
         return;
     }
@@ -333,7 +333,7 @@ int refreshesCompleted = 0;
     }
     // this means the package manager finished adding repos
     else {
-        if (self.tweaksSwitchStatus == true) {
+        if (self.tweaksSwitchStatus) {
             if (shouldTransition) {
                 [self updateProgressMessage:@"Queuing tweaks...."];
                 [self queueTweaks:shouldTransition];
@@ -706,7 +706,7 @@ int refreshesCompleted = 0;
 
 // Queues all currently-installed tweaks for removal in the current package manager
 - (void)removeAllTweaks {
-    if (self.removeAllTweaksSwitchStatus == true) {
+    if (self.removeAllTweaksSwitchStatus) {
         [self runCommand:@"bmd removealltweaks 1"];
     }
     else {
@@ -884,7 +884,7 @@ int refreshesCompleted = 0;
                           shouldOpenBMHomeViewControllerFirst:(BOOL)shouldOpenBMHomeViewControllerFirst {
     UIAlertAction *proceedAction = [UIAlertAction
         actionWithTitle:@"Proceed" style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            if (self.uicacheSwitchStatus == true && self.respringSwitchStatus == false) {
+            if (self.uicacheSwitchStatus && !self.respringSwitchStatus) {
                 [self showProcessingDialog:@"Running uicache...." includeStage:false startingStep:1 autoPresent:true];
                 [self runCommand:@"uicache --all"];
                 
@@ -900,11 +900,11 @@ int refreshesCompleted = 0;
                 [self.processingDialog addAction:okAction];
             }
             
-            else if (self.uicacheSwitchStatus == false && self.respringSwitchStatus == true) {
+            else if (!self.uicacheSwitchStatus && self.respringSwitchStatus) {
                 [self runCommand:@"sbreload"];
             }
             
-            else if (self.uicacheSwitchStatus == true && self.respringSwitchStatus == true) {
+            else if (self.uicacheSwitchStatus && self.respringSwitchStatus) {
                 NSString *dialog = @"Running uicache and respringing....";
                 [self showProcessingDialog:dialog includeStage:false startingStep:1 autoPresent:true];
                 [self runCommand:@"uicache --all --respring"];
@@ -940,7 +940,7 @@ int refreshesCompleted = 0;
         ];
         [alert addAction:proceedAction];
         [alert addAction:doNothingAction];
-        if (theMessage == nil) {
+        if (!theMessage) {
             [self placeUISwitchInsideUIAlertController:alert whichScreen:4];
         }
         else {
