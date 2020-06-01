@@ -4,39 +4,39 @@
 #import "Tweak.h"
 
 @interface Batchomatic : NSObject
-@property BMHomeTableViewController *bm_BMHomeTableViewController;
-@property BMInstallTableViewController *bm_BMInstallTableViewController;
-@property BMRepackTableViewController *bm_BMRepackTableViewController;
-@property id bm_currentBMController;
+@property (nonatomic) BMHomeTableViewController *bm_BMHomeTableViewController;
+@property (nonatomic) BMInstallTableViewController *bm_BMInstallTableViewController;
+@property (nonatomic) BMRepackTableViewController *bm_BMRepackTableViewController;
+@property (nonatomic) id bm_currentBMController;
 
-@property id motherClass;
-@property ZBTabBarController *zebra_ZBTabBarController;
-@property ZBRepoListTableViewController *zebra_ZBRepoListTableViewController;
-@property _TtC5Sileo21SourcesViewController *sileo_SourcesViewController;
-@property ATTabBarController *installer_ATTabBarController;
-@property ManageViewController *installer_ManageViewController;
+@property (nonatomic) id motherClass;
+@property (nonatomic) ZBTabBarController *zebra_ZBTabBarController;
+@property (nonatomic) ZBRepoListTableViewController *zebra_ZBRepoListTableViewController;
+@property (nonatomic) _TtC5Sileo21SourcesViewController *sileo_SourcesViewController;
+@property (nonatomic) ATTabBarController *installer_ATTabBarController;
+@property (nonatomic) ManageViewController *installer_ManageViewController;
 
-@property bool prefsSwitchStatus;
-@property bool savedDebsSwitchStatus;
-@property bool hostsSwitchStatus;
-@property bool reposSwitchStatus;
-@property bool tweaksSwitchStatus;
-@property bool offlineTweaksSwitchStatus;
-@property bool uicacheSwitchStatus;
-@property bool respringSwitchStatus;
-@property bool removeAllReposSwitchStatus;
-@property bool removeAllTweaksSwitchStatus;
+@property (nonatomic) bool prefsSwitchStatus;
+@property (nonatomic) bool savedDebsSwitchStatus;
+@property (nonatomic) bool hostsSwitchStatus;
+@property (nonatomic) bool reposSwitchStatus;
+@property (nonatomic) bool tweaksSwitchStatus;
+@property (nonatomic) bool offlineTweaksSwitchStatus;
+@property (nonatomic) bool uicacheSwitchStatus;
+@property (nonatomic) bool respringSwitchStatus;
+@property (nonatomic) bool removeAllReposSwitchStatus;
+@property (nonatomic) bool removeAllTweaksSwitchStatus;
 
-@property int packageManager;
-@property bool isRemovingRepos;
-@property bool debIsInstalled;
-@property bool debIsOnline;
-@property NSArray *currentlyInstalledTweaks;
+@property (nonatomic) int packageManager;
+@property (nonatomic) bool isRemovingRepos;
+@property (nonatomic) bool debIsInstalled;
+@property (nonatomic) bool debIsOnline;
+@property (nonatomic) NSArray *currentlyInstalledTweaks;
 
-@property UIAlertController *processingDialog;
-@property UIActivityIndicatorView *spinner;
-@property int maxSteps;
-@property int currentStep;
+@property (nonatomic) UIAlertController *processingDialog;
+@property (nonatomic) UIActivityIndicatorView *spinner;
+@property (nonatomic) int maxSteps;
+@property (nonatomic) int currentStep;
 
 + (instancetype)sharedInstance;
 + (void)placeButton:(UIViewController *)sender;
