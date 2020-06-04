@@ -60,7 +60,7 @@ extern int refreshesCompleted;
 
 //--------------------------------------------------------------------------------------------------------------------------
 // Zebra
-%hook ZBSearchViewController
+%hook ZBSearchTableViewController
 - (void)viewDidLoad {
     %orig;
     [Batchomatic placeButton:self];

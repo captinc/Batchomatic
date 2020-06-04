@@ -44,7 +44,7 @@
 
 //--------------------------------------------------------------------------------------------------------------------------
 // Zebra
-@interface ZBSearchViewController : UITableViewController
+@interface ZBSearchTableViewController : UITableViewController
 - (void)startBatchomatic;
 @end
 
