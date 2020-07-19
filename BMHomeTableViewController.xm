@@ -81,16 +81,10 @@
 
 // Add the version number as footer of the UITableView
 - (void)addVersionNumberFooter {
-    Batchomatic *bm = [Batchomatic sharedInstance];
     UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 28)];
     UILabel *label = [[UILabel alloc] initWithFrame:footer.frame];
     label.text = [self versionNumber];
     label.textAlignment = NSTextAlignmentCenter;
-    // Zebra has its own dark mode that doesn't follow the iOS 13 dark
-    // mode, so we need to manually set the text color when in Zebra's dark mode
-    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
-        label.textColor = [UIColor whiteColor];
-    }
     [footer addSubview:label];
     self.tableView.tableFooterView = footer;
 }
@@ -135,13 +129,9 @@
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellIdentifier];
     }
-    Batchomatic *bm = [Batchomatic sharedInstance];
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:22];
     cell.textLabel.textAlignment = NSTextAlignmentCenter;
-    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
-        cell.textLabel.textColor = [UIColor whiteColor];
-    }
     
     // top section
     if (indexPath.section == 0) {

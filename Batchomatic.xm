@@ -278,14 +278,14 @@ int refreshesCompleted = 0;
         
         // if we are using Zebra
         else if (self.packageManager == 2) {
-            NSString *reposToAdd = [NSString
+            NSURL *url = [NSURL fileURLWithPath:@"/tmp/batchomatic/reposToAdd.txt"]; 
                 stringWithContentsOfFile:@"/tmp/batchomatic/reposToAdd.txt"
                 encoding:NSUTF8StringEncoding error:nil
             ];
             [self.processingDialog dismissViewControllerAnimated:YES completion:^{
                 [self.bm_BMInstallTableViewController dismissViewControllerAnimated:YES completion:^{
                     [self.bm_BMHomeTableViewController dismissViewControllerAnimated:YES completion:^{
-                        [self.zebra_ZBRepoListTableViewController didAddReposWithText:reposToAdd];
+                        [self.zebra_ZBSourceListTableViewController handleImportOf:url];
                     }];
                 }];
             }];
@@ -625,7 +625,6 @@ int refreshesCompleted = 0;
         NSArray *cannotBeRemoved = @[
             @"http://apt.bingner.com/",
             @"https://apt.bingner.com/",
-            @"https://checkra.in/assets/mobilesubstrate/",
             @"https://diatr.us/apt/"
         ];
         for (int x = 0; x < [allRepos count]; x++) {
@@ -643,31 +642,18 @@ int refreshesCompleted = 0;
     
     // Zebra
     else if (self.packageManager == 2) {
-        for (int x = 0; x < [ignoredRepos count]; x++) {
-            NSString *url = [ignoredRepos objectAtIndex:x];
-            if ([url hasPrefix:@"http://"]) {
-                url = [url substringFromIndex:[@"http://" length]];
-            }
-            if ([url hasPrefix:@"https://"]) {
-                url = [url substringFromIndex:[@"https://" length]];
-            }
-            [ignoredRepos replaceObjectAtIndex:x withObject:url];
-        }
-        
-        NSArray *allRepos = [[[%c(ZBDatabaseManager) sharedInstance] repos] copy];
-        for (int x = 0; x < [allRepos count]; x++) {
-            NSString *url = [(ZBRepo *)[allRepos objectAtIndex:x] shortURL];
-            if ([url isEqualToString:@"getzbra.com/repo/"]) {
+        NSArray *allRepos = [[[%c(ZBDatabaseManager) sharedInstance] sources] copy];
+        for (ZBBaseSource *source in allRepos) {
+            if ([source.repositoryURI isEqualToString:@"https://getzbra.com/repo/"]) {
                 continue;
             }
-            if (!self.removeAllReposSwitchStatus && [ignoredRepos containsObject:url]) {
+            if (!self.removeAllReposSwitchStatus && [ignoredRepos containsObject:source.repositoryURI]) {
                 continue;
             }
-            [[%c(ZBRepoManager) sharedInstance] deleteSource:(ZBRepo *)[allRepos objectAtIndex:x]];
+            [[%c(ZBSourceManager) sharedInstance] deleteSource:(ZBSource *)source];
         }
-        
-        UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-        [self.zebra_ZBRepoListTableViewController refreshSources:refreshControl];
+        [self.zebra_ZBSourceListTableViewController refreshTable];
+        [self processingReposDidFinish:true];
     }
     
     // Sileo
@@ -676,7 +662,6 @@ int refreshesCompleted = 0;
         NSArray *allRepos = [[%c(_TtC5Sileo11RepoManager) shared] repoList];
         NSArray *cannotBeRemoved = @[
             @"https://repo.chimera.sh/",
-            @"https://checkra.in/assets/mobilesubstrate/",
             @"https://diatr.us/dark/",
             @"https://diatr.us/sileodark/",
             @"https://diatr.us/apt/"

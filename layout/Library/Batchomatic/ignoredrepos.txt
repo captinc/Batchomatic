@@ -1,6 +1,5 @@
 http://apt.bingner.com/
 https://apt.bingner.com/
-https://checkra.in/assets/mobilesubstrate/
 https://diatr.us/apt/
 https://diatr.us/dark/
 https://diatr.us/sileodark/

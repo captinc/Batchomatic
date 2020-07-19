@@ -63,9 +63,6 @@
     Batchomatic *bm = [Batchomatic sharedInstance];
     
     cell.textLabel.font = [UIFont boldSystemFontOfSize:22];
-    if (bm.packageManager == 2 && [%c(ZBDevice) darkModeEnabled]) {
-        cell.textLabel.textColor = [UIColor whiteColor];
-    }
     
     // put a UISwitch in each row of the top section
     if (indexPath.section == 0) {

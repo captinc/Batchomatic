@@ -48,12 +48,8 @@
 - (void)startBatchomatic;
 @end
 
-@interface ZBRefreshableTableViewController : UITableViewController
-- (void)refreshSources:(id)sender;
-@end
-
-@interface ZBRepoListTableViewController : ZBRefreshableTableViewController
-- (void)didAddReposWithText:(NSString *)text;
+@interface ZBSourceListTableViewController : UITableViewController
+- (void)handleImportOf:(NSURL *)url;
 - (void)refreshTable;
 @end
 
@@ -76,27 +72,26 @@ typedef enum {
 
 @interface ZBTabBarController : UITabBarController
 - (void)openQueue:(BOOL)openPopup;
-- (void)setRepoRefreshIndicatorVisible:(BOOL)visible;
 @end
 
-@interface ZBRepo : NSObject
-- (NSMutableString *)shortURL;
+@interface ZBSource : NSObject
 @end
 
-@interface ZBRepoManager : NSObject
+@interface ZBBaseSource : NSObject
+@property (nonatomic) NSString *repositoryURI;
+@end
+
+@interface ZBSourceManager : NSObject
 + (instancetype)sharedInstance;
-- (void)deleteSource:(ZBRepo *)repo;
+- (NSMutableDictionary *)sources;
+- (void)deleteSource:(ZBSource *)source;
 @end
 
 @interface ZBDatabaseManager : NSObject
 + (instancetype)sharedInstance;
 - (ZBPackage *)topVersionForPackageID:(NSString *)packageIdentifier;
 - (BOOL)packageIDIsInstalled:(NSString *)packageIdentifier version:(NSString *)version;
-- (NSMutableArray *)repos;
-@end
-
-@interface ZBDevice : NSObject
-+ (BOOL)darkModeEnabled;
+- (NSSet *)sources;
 @end
 
 //--------------------------------------------------------------------------------------------------------------------------
