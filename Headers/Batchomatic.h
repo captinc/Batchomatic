@@ -73,7 +73,7 @@
 - (void)toggleTapped:(UISwitch *)sender;
 
 - (void)determineInfoAboutDeb;
-- (void)loadListOfCurrentlyInstalledTweaks;
+- (BOOL)loadListOfCurrentlyInstalledTweaks;
 
 - (NSString *)runCommand:(NSString *)theCommand;
 - (NSString *)readEachLineOfFile:(FILE *)file;

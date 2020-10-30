@@ -22,9 +22,14 @@
     bm.bm_BMHomeTableViewController = self;
     
     // must use dispatch_async to prevent the UI from freezing
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [bm determineInfoAboutDeb];
-        [bm loadListOfCurrentlyInstalledTweaks];
+        if (![bm loadListOfCurrentlyInstalledTweaks]) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                NSString *message = @"Could not list installed tweaks. Try running ldid -S /usr/bin/bmd";
+                [self showAlert:@"Error" message:message];
+            });
+        }
     });
     
     [self createNavBar];
@@ -37,6 +42,17 @@
     [Batchomatic sharedInstance].bm_currentBMController = self;
     // when this was in viewDidLoad, the version number wasn't being centered on iPads, but putting this in viewWillAppear fixed it
     [self addVersionNumberFooter];
+}
+
+- (void)showAlert:(NSString *)title message:(NSString *)message {
+    UIAlertController *alert = [UIAlertController
+        alertControllerWithTitle:title
+        message:message
+        preferredStyle:UIAlertControllerStyleAlert
+    ];
+
+    [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 //--------------------------------------------------------------------------------------------------------------------------

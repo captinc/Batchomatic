@@ -1155,26 +1155,30 @@ int refreshesCompleted = 0;
 }
 
 // Used only for "Repack tweak to .deb" (not used anywhere else)
-- (void)loadListOfCurrentlyInstalledTweaks {
+- (BOOL)loadListOfCurrentlyInstalledTweaks {
     [self runCommand:@"bmd rmgetlist"];
     [self runCommand:@"bmd getlist"];
     
     NSMutableArray *tweaks = [[NSMutableArray alloc] init];
-    FILE *file = fopen("/tmp/batchomaticGetList/tweaks.txt", "r");
-    while (!feof(file)) {
-        NSString *packageID = [self readEachLineOfFile:file];
-        NSString *cmd = [NSString stringWithFormat:@"dpkg-query -s %@%@", packageID, @" | grep \"Name: \" | sed 's/Name: //'"];
-        NSString *name = [self runCommand:cmd];
-        if ([name isEqualToString:@""]) {
-            name = packageID;
+    FILE *file = nil;
+    if ((file = fopen("/tmp/batchomaticGetList/tweaks.txt", "r"))) {
+        while (!feof(file)) {
+            NSString *packageID = [self readEachLineOfFile:file];
+            NSString *cmd = [NSString stringWithFormat:@"dpkg-query -s %@%@", packageID, @" | grep \"Name: \" | sed 's/Name: //'"];
+            NSString *name = [self runCommand:cmd];
+            if ([name isEqualToString:@""]) {
+                name = packageID;
+            }
+            
+            NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+            [dict setObject:name forKey:@"name"];
+            [dict setObject:packageID forKey:@"packageID"];
+            [tweaks addObject:dict];
         }
-        
-        NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
-        [dict setObject:name forKey:@"name"];
-        [dict setObject:packageID forKey:@"packageID"];
-        [tweaks addObject:dict];
+        fclose(file);
+    } else {
+        return NO;
     }
-    fclose(file);
     
     NSSortDescriptor *descriptor = [[NSSortDescriptor alloc]
         initWithKey:@"name" ascending:YES selector:@selector(caseInsensitiveCompare:)
@@ -1189,6 +1193,7 @@ int refreshesCompleted = 0;
     }
     
     [self runCommand:@"bmd rmgetlist"];
+    return YES;
 }
 
 //--------------------------------------------------------------------------------------------------------------------------
