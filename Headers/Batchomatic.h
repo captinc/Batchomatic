@@ -11,7 +11,8 @@
 
 @property (nonatomic) id motherClass;
 @property (nonatomic) ZBTabBarController *zebra_ZBTabBarController;
-@property (nonatomic) ZBRepoListTableViewController *zebra_ZBRepoListTableViewController;
+@property (nonatomic) ZBRepoListTableViewController *zebra_sourcesVC;
+@property (nonatomic) ZBSourceManager *zebra_sourcesManager;
 @property (nonatomic) _TtC5Sileo21SourcesViewController *sileo_SourcesViewController;
 @property (nonatomic) ATTabBarController *installer_ATTabBarController;
 @property (nonatomic) ManageViewController *installer_ManageViewController;

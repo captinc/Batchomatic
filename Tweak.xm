@@ -71,11 +71,14 @@ extern int refreshesCompleted;
     bm.packageManager = 2;
     bm.motherClass = self;
     // This saves the instance of ZBTabBarController for later use
-    bm.zebra_ZBTabBarController = (ZBTabBarController *)self.tabBarController;
+    bm.zebra_ZBTabBarController = (id)self.tabBarController;
     UINavigationController *ctrl = self.tabBarController.viewControllers[1];
     // And this saves the instance of ZBRepoListTableViewController
-    bm.zebra_ZBRepoListTableViewController = (ZBRepoListTableViewController *)ctrl.viewControllers[0];
-    [bm.zebra_ZBRepoListTableViewController viewDidLoad];
+    bm.zebra_sourcesVC = (id)ctrl.viewControllers[0];
+    // And so on
+    bm.zebra_sourcesManager = [%c(ZBSourceManager) sharedInstance];
+    
+    [bm.zebra_sourcesVC viewDidLoad];
     [Batchomatic openMainScreen:self];
 }
 %end

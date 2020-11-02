@@ -285,7 +285,27 @@ int refreshesCompleted = 0;
             [self.processingDialog dismissViewControllerAnimated:YES completion:^{
                 [self.bm_BMInstallTableViewController dismissViewControllerAnimated:YES completion:^{
                     [self.bm_BMHomeTableViewController dismissViewControllerAnimated:YES completion:^{
-                        [self.zebra_ZBRepoListTableViewController didAddReposWithText:reposToAdd];
+                        if ([self.zebra_sourcesVC respondsToSelector:@selector(didAddReposWithText:)]) {
+                            [self.zebra_sourcesVC didAddReposWithText:reposToAdd];
+                        } else {
+                            NSArray *splitSources = [reposToAdd componentsSeparatedByString:@"\n"];
+                            NSMutableArray *actualURLs = [NSMutableArray new];
+                            for (NSString *s in splitSources) {
+                                NSURL *url = [NSURL URLWithString:s];
+                                if (url) {
+                                    [actualURLs addObject:url];
+                                }
+                            }
+                            NSSet *sources = [%c(ZBBaseSource) baseSourcesFromURLs:actualURLs];
+
+                            if ([self.zebra_sourcesManager respondsToSelector:@selector(addBaseSources:)]) {
+                                [self.zebra_sourcesManager addBaseSources:sources];
+                            } else if ([self.zebra_sourcesManager respondsToSelector:@selector(addSources:error:)]) {
+                                // TODO: handle error
+                                // NSError *error = nil;
+                                [self.zebra_sourcesManager addSources:sources error:nil];
+                            }
+                        }
                     }];
                 }];
             }];
@@ -667,7 +687,7 @@ int refreshesCompleted = 0;
         }
         
         UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-        [self.zebra_ZBRepoListTableViewController refreshSources:refreshControl];
+        [self.zebra_sourcesVC refreshSources:refreshControl];
     }
     
     // Sileo

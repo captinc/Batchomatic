@@ -52,9 +52,24 @@
 - (void)refreshSources:(id)sender;
 @end
 
+/// Later renamed to ZBSourceListTableViewController, but no matter
 @interface ZBRepoListTableViewController : ZBRefreshableTableViewController
+/// Not available with ZBSourceListTableViewController
 - (void)didAddReposWithText:(NSString *)text;
 - (void)refreshTable;
+@end
+
+@interface ZBBaseSource : NSObject
++ (NSSet<ZBBaseSource *> *)baseSourcesFromURLs:(NSArray *)URLs;
+@end
+
+@interface ZBSourceManager : NSObject
+@property (nonatomic, readonly, class) ZBSourceManager *sharedInstance;
+
+// 1.1
+- (void)addBaseSources:(NSSet<ZBBaseSource *> *)sources;
+// 1.2
+- (void)addSources:(NSSet<ZBBaseSource *> *)sources error:(NSError **)error;
 @end
 
 @interface ZBRefreshViewController : UIViewController
